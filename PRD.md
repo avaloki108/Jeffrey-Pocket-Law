@@ -34,11 +34,11 @@ The app focuses on chat interaction with state context and prompt templates, usi
 - **Success criteria**: Templates organized into 8+ categories, one-click insertion into chat, covers most common legal questions
 
 ### Conversation History
-- **Functionality**: Persistent storage of all chat conversations with timestamps and ability to continue previous discussions
-- **Purpose**: Users can reference past legal information and maintain ongoing legal research
-- **Trigger**: Automatic on every message exchange
-- **Progression**: User asks question → Response stored locally → History displays in sidebar/panel → User can click previous conversation → Context resumes → User can delete individual conversations
-- **Success criteria**: All conversations persist between sessions, searchable, can be individually deleted, no data sent to external servers
+- **Functionality**: Persistent storage of all chat conversations with sidebar navigation to browse, resume, and delete previous discussions
+- **Purpose**: Users can reference past legal information and maintain ongoing legal research across multiple sessions
+- **Trigger**: Conversations automatically save; users access via sidebar (desktop) or menu button (mobile)
+- **Progression**: User asks question → Conversation auto-saves with title → Appears in sidebar → User can click to resume → Continue from where they left off → Delete unwanted conversations
+- **Success criteria**: All conversations persist between sessions, automatically titled from first message, sorted by recency, individually deletable, seamless switching between conversations
 
 ## Edge Case Handling
 
