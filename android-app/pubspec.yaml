@@ -10,49 +10,51 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  riverpod: ^2.4.0
+  riverpod: ^2.6.1
   flutter_local_notifications: ^19.4.2
   timezone: ^0.10.1
   provider: ^6.0.0
   cupertino_icons: ^1.0.8
 
   # State management
-  flutter_riverpod: 2.5.1
+  flutter_riverpod: ^2.6.1
 
   # Networking
-  dio: 5.6.0
+  dio: ^5.9.0
   http: ^1.2.2
 
   # Storage / security
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  pointycastle: 3.9.1
+  pointycastle: ^4.0.0
   flutter_secure_storage: ^9.2.2
   local_auth: ^2.3.0
 
   # Config / UI
-  flutter_dotenv: 5.1.0
+  flutter_dotenv: ^6.0.0
   flutter_markdown: ^0.7.4+1
-  cached_network_image: 3.3.1
-  lottie: 3.1.0
+  cached_network_image: ^3.4.1
+  lottie: ^3.3.0
   flutter_staggered_grid_view: ^0.7.0
 
   # Firebase / Ads (already in your repo)
-  firebase_core: ^2.32.0
-  firebase_analytics: 10.8.9
-  firebase_crashlytics: 3.4.18
+  firebase_core: ^4.2.1
+  firebase_analytics: ^12.0.4
+  firebase_crashlytics: ^5.0.5
+  firebase_data_connect: ^0.2.2
   google_mobile_ads: ^6.0.0
 
   # Viral growth features
   in_app_review: ^2.0.9
-  share_plus: ^10.0.2
+  share_plus: ^12.0.1
   url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  firebase_core_platform_interface: ^6.0.2
 
 flutter_icons:
   android: "launcher_icon"

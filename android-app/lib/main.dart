@@ -52,21 +52,28 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final NavigatorObserver? navigatorObserver;
+  const MyApp({super.key, this.navigatorObserver});
 
   @override
   Widget build(BuildContext context) {
     // Create a Firebase Analytics observer to automatically log navigation events
-    final analyticsObserver = FirebaseAnalyticsObserver(
-      analytics: FirebaseAnalytics.instance,
-    );
+    // Use the injected observer if provided (for testing)
+    final observers = <NavigatorObserver>[];
+    if (navigatorObserver != null) {
+      observers.add(navigatorObserver!);
+    } else {
+      observers.add(FirebaseAnalyticsObserver(
+        analytics: FirebaseAnalytics.instance,
+      ));
+    }
 
     return MaterialApp(
       title: AppConstants.appName,
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       initialRoute: '/',
-      navigatorObservers: [analyticsObserver],
+      navigatorObservers: observers,
       onGenerateRoute: (settings) {
         // Handle routes with arguments
         if (settings.name == '/chat') {
@@ -78,19 +85,15 @@ class MyApp extends StatelessWidget {
         // Default routes
         switch (settings.name) {
           case '/':
-            return MaterialPageRoute(
-                builder: (context) => const SplashScreen());
+            return MaterialPageRoute(builder: (context) => const SplashScreen());
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());
           case '/prompts':
-            return MaterialPageRoute(
-                builder: (context) => const PromptsScreen());
+            return MaterialPageRoute(builder: (context) => const PromptsScreen());
           case '/settings':
-            return MaterialPageRoute(
-                builder: (context) => const SettingsScreen());
+            return MaterialPageRoute(builder: (context) => const SettingsScreen());
           default:
-            return MaterialPageRoute(
-                builder: (context) => const SplashScreen());
+            return MaterialPageRoute(builder: (context) => const SplashScreen());
         }
       },
     );

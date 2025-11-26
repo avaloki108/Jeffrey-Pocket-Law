@@ -1,0 +1,76 @@
+connectorId: example
+generate:
+  dartSdk:
+    - outputDir: ..\..\android-app\lib\dataconnect_generated
+      package: dataconnect_generated/generated.dart
+  kotlinSdk:
+    - outputDir: ..\..\grpc-java-1.75.0\xds\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\util\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\testing\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\testing-proto\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\stub\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\servlet\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\services\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\rls\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\s2a\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\protobuf\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\protobuf-lite\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\opentelemetry\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\okhttp\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\netty\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\istio-interop-testing\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\interop-testing\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\inprocess\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\grpclb\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\googleapis\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\gcp-observability\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\gcp-csm-observability\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\examples\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\cronet\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\core\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\contextstorage\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\census\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\buildSrc\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\binder\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\benchmarks\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\authz\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\auth\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\api\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\android-interop-testing\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\android\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated
+    - outputDir: ..\..\grpc-java-1.75.0\alts\src\main\kotlin
+      package: com.google.firebase.dataconnect.generated

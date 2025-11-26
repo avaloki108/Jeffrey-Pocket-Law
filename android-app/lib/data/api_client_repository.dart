@@ -2,18 +2,21 @@ import 'package:flutter/foundation.dart';
 
 import '../infrastructure/congress_api_client.dart';
 import '../infrastructure/deepseek_api_client.dart';
+import '../infrastructure/groq_api_client.dart';
 import '../infrastructure/legiscan_api_client.dart';
 import '../infrastructure/open_router_api_client.dart';
 
 class ApiClientRepository {
   final OpenRouterApiClient _openRouterClient;
   final DeepSeekApiClient _deepSeekClient;
+  final GroqApiClient _groqClient;
   final LegiScanApiClient _legiScanClient;
   final CongressApiClient _congressClient;
 
   ApiClientRepository(
     this._openRouterClient,
     this._deepSeekClient,
+    this._groqClient,
     this._legiScanClient,
     this._congressClient,
   );
@@ -31,33 +34,42 @@ class ApiClientRepository {
         query: searchQuery != null ? '$legalTopic $searchQuery' : legalTopic,
       );
       final enriched = Map<String, dynamic>.from(lawApiResponse);
+      
+      final prompt = 'Based on the following data, provide a comprehensive summary of $legalTopic laws in $state: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
+      
       try {
-        final prompt = 'Based on the following data, provide a comprehensive summary of $legalTopic laws in $state: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
-        final aiSummary = await _deepSeekClient.generate(prompt: prompt);
+        final aiSummary = await _groqClient.generate(prompt: prompt);
         enriched['ai_summary'] = aiSummary;
       } catch (_) {
         try {
-          final prompt = 'Based on the following data, provide a comprehensive summary of $legalTopic laws in $state: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
-          final aiSummary = await _openRouterClient.generate(prompt: prompt);
+          final aiSummary = await _deepSeekClient.generate(prompt: prompt);
           enriched['ai_summary'] = aiSummary;
-        } catch (e) {
-          // Ignore AI summary failure, still return structured data.
-          debugPrint('AI summary generation failed: $e');
+        } catch (_) {
+          try {
+            final aiSummary = await _openRouterClient.generate(prompt: prompt);
+            enriched['ai_summary'] = aiSummary;
+          } catch (e) {
+            debugPrint('AI summary generation failed: $e');
+          }
         }
       }
       return enriched;
     } catch (e) {
       // If structured API fails, fallback to pure LLM.
+      final prompt =
+          'Provide information on $legalTopic laws in $state${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
+      
       try {
-        final prompt =
-            'Provide information on $legalTopic laws in $state${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
-        final aiResponse = await _deepSeekClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        final aiResponse = await _groqClient.generate(prompt: prompt);
+        return {'ai_response': aiResponse, 'source': 'groq_fallback'};
       } catch (_) {
-        final prompt =
-            'Provide information on $legalTopic laws in $state${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
-        final aiResponse = await _openRouterClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        try {
+          final aiResponse = await _deepSeekClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        } catch (_) {
+          final aiResponse = await _openRouterClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        }
       }
     }
   }
@@ -73,32 +85,42 @@ class ApiClientRepository {
         query: searchQuery != null ? '$legalTopic $searchQuery' : legalTopic,
       );
       final enriched = Map<String, dynamic>.from(lawApiResponse);
+      
+      final prompt = 'Based on the following data, provide a comprehensive summary of federal $legalTopic laws: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
+      
       try {
-        final prompt = 'Based on the following data, provide a comprehensive summary of federal $legalTopic laws: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
-        final aiSummary = await _deepSeekClient.generate(prompt: prompt);
+        final aiSummary = await _groqClient.generate(prompt: prompt);
         enriched['ai_summary'] = aiSummary;
       } catch (_) {
         try {
-          final prompt = 'Based on the following data, provide a comprehensive summary of federal $legalTopic laws: $lawApiResponse. Explain in simple terms, include relevant statutes, and cite sources.';
-          final aiSummary = await _openRouterClient.generate(prompt: prompt);
+          final aiSummary = await _deepSeekClient.generate(prompt: prompt);
           enriched['ai_summary'] = aiSummary;
-        } catch (e) {
+        } catch (_) {
+          try {
+            final aiSummary = await _openRouterClient.generate(prompt: prompt);
+            enriched['ai_summary'] = aiSummary;
+          } catch (e) {
             debugPrint('AI summary generation failed: $e');
+          }
         }
       }
       return enriched;
     } catch (e) {
       // If structured API fails, fallback to pure LLM.
+      final prompt =
+          'Provide information on federal $legalTopic laws${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
+      
       try {
-        final prompt =
-            'Provide information on federal $legalTopic laws${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
-        final aiResponse = await _deepSeekClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        final aiResponse = await _groqClient.generate(prompt: prompt);
+        return {'ai_response': aiResponse, 'source': 'groq_fallback'};
       } catch (_) {
-        final prompt =
-            'Provide information on federal $legalTopic laws${searchQuery != null ? ' regarding $searchQuery' : ''}. Include relevant statutes and cite sources.';
-        final aiResponse = await _openRouterClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        try {
+          final aiResponse = await _deepSeekClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        } catch (_) {
+          final aiResponse = await _openRouterClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        }
       }
     }
   }
@@ -109,16 +131,20 @@ class ApiClientRepository {
     required String legalIssue,
     int maxResults = 5,
   }) async {
+    final prompt =
+        'Search for relevant court cases in $jurisdiction regarding $legalIssue. Provide up to $maxResults cases with citations and brief summaries.';
+    
     try {
-      final prompt =
-          'Search for relevant court cases in $jurisdiction regarding $legalIssue. Provide up to $maxResults cases with citations and brief summaries.';
-      final aiResponse = await _deepSeekClient.generate(prompt: prompt);
-      return {'ai_response': aiResponse, 'source': 'deepseek'};
+      final aiResponse = await _groqClient.generate(prompt: prompt);
+      return {'ai_response': aiResponse, 'source': 'groq'};
     } catch (_) {
-      final prompt =
-          'Search for relevant court cases in $jurisdiction regarding $legalIssue. Provide up to $maxResults cases with citations and brief summaries.';
-      final aiResponse = await _openRouterClient.generate(prompt: prompt);
-      return {'ai_response': aiResponse, 'source': 'openrouter'};
+      try {
+        final aiResponse = await _deepSeekClient.generate(prompt: prompt);
+        return {'ai_response': aiResponse, 'source': 'deepseek'};
+      } catch (_) {
+        final aiResponse = await _openRouterClient.generate(prompt: prompt);
+        return {'ai_response': aiResponse, 'source': 'openrouter'};
+      }
     }
   }
 
@@ -150,32 +176,41 @@ class ApiClientRepository {
       }
 
       final enriched = Map<String, dynamic>.from(lawApiResponse);
+      final prompt = 'Based on the following data from $apiSource, provide a detailed explanation of the law or citation "$citation": $lawApiResponse. Explain its meaning and implications in simple terms.';
+      
       try {
-        final prompt = 'Based on the following data from $apiSource, provide a detailed explanation of the law or citation "$citation": $lawApiResponse. Explain its meaning and implications in simple terms.';
-        final aiSummary = await _deepSeekClient.generate(prompt: prompt);
+        final aiSummary = await _groqClient.generate(prompt: prompt);
         enriched['ai_summary'] = aiSummary;
       } catch (_) {
         try {
-          final prompt = 'Based on the following data from $apiSource, provide a detailed explanation of the law or citation "$citation": $lawApiResponse. Explain its meaning and implications in simple terms.';
-          final aiSummary = await _openRouterClient.generate(prompt: prompt);
+          final aiSummary = await _deepSeekClient.generate(prompt: prompt);
           enriched['ai_summary'] = aiSummary;
-        } catch (e) {
+        } catch (_) {
+          try {
+            final aiSummary = await _openRouterClient.generate(prompt: prompt);
+            enriched['ai_summary'] = aiSummary;
+          } catch (e) {
             debugPrint('AI summary generation failed: $e');
+          }
         }
       }
 
       return enriched;
     } catch (e) {
+      final prompt =
+          'Provide the text and explanation of citation: $citation${jurisdiction != null ? ' from $jurisdiction' : ''}.';
+      
       try {
-        final prompt =
-            'Provide the text and explanation of citation: $citation${jurisdiction != null ? ' from $jurisdiction' : ''}.';
-        final aiResponse = await _deepSeekClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        final aiResponse = await _groqClient.generate(prompt: prompt);
+        return {'ai_response': aiResponse, 'source': 'groq_fallback'};
       } catch (_) {
-        final prompt =
-            'Provide the text and explanation of citation: $citation${jurisdiction != null ? ' from $jurisdiction' : ''}.';
-        final aiResponse = await _openRouterClient.generate(prompt: prompt);
-        return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        try {
+          final aiResponse = await _deepSeekClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'deepseek_fallback'};
+        } catch (_) {
+          final aiResponse = await _openRouterClient.generate(prompt: prompt);
+          return {'ai_response': aiResponse, 'source': 'openrouter_fallback'};
+        }
       }
     }
   }
@@ -183,5 +218,6 @@ class ApiClientRepository {
   /// Legacy method names kept for backward compatibility.
   Future<String> queryOpenRouter(String prompt) => _openRouterClient.generate(prompt: prompt);
   Future<String> queryDeepSeek(String prompt) => _deepSeekClient.generate(prompt: prompt);
-  Future<String> queryOpenAi(String prompt) => _openRouterClient.generate(prompt: prompt);
+  Future<String> queryGroq(String prompt) => _groqClient.generate(prompt: prompt);
+  Future<String> queryOpenAi(String prompt) => _groqClient.generate(prompt: prompt); // Redirect legacy OpenAI calls to Groq
 }

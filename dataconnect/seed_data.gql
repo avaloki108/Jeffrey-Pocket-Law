@@ -1,0 +1,46 @@
+mutation SeedData {
+    # 1. Create a User
+    user_upsert(data: {
+        email: "stressed_user@example.com",
+        displayName: "Jeffery's Best Friend",
+        createdAt: "2024-03-01T10:00:00.000Z"
+    })
+
+    # 2. Create a Court Case (The thing they are freaking out about)
+    courtCase_upsert(data: {
+        id: "case_001",
+        userId: "stressed_user@example.com",
+        title: "Bogus Traffic Stop",
+        caseNumber: "TR-2024-999",
+        courtName: "Municipal Court",
+        status: "Active",
+        createdAt: "2024-03-02T10:00:00.000Z",
+        description: "I got pulled over for nothing and now I have to go to court."
+    })
+
+    # 3. Add an Event (The date they need to remember)
+    caseEvent_upsert(data: {
+        id: "event_001",
+        courtCaseId: "case_001",
+        title: "Arraignment Hearing",
+        date: "2024-04-15T09:00:00.000Z",
+        notes: "Don't forget to wear a tie.",
+        isCompleted: false
+    })
+
+    # 4. Start a Chat about it
+    chatSession_upsert(data: {
+        id: "session_001",
+        userId: "stressed_user@example.com",
+        title: "Freaking out about court",
+        createdAt: "2024-03-02T10:05:00.000Z"
+    })
+
+    chatMessage_upsert(data: {
+        id: "msg_001",
+        chatSessionId: "session_001",
+        sender: "user",
+        content: "Jeffery, what is an arraignment? Do I need a lawyer?",
+        timestamp: "2024-03-02T10:05:05.000Z"
+    })
+}
