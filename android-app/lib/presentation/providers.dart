@@ -12,33 +12,38 @@ import '../infrastructure/open_router_api_client.dart';
 import '../infrastructure/groq_api_client.dart';
 import '../services/viral_growth_service.dart';
 import 'deepseek_providers.dart';
+import '../dataconnect_generated/generated.dart';
+// import 'package:firebase_data_connect/firebase_data_connect.dart'; // Unused directly here, but used in generated.dart
 
 // Export prompt selected provider for cross-screen communication
-export '../domain/models/prompt_selected_notifier.dart' show promptSelectedProvider;
+export '../domain/models/prompt_selected_notifier.dart'
+    show promptSelectedProvider;
 
 /// Tracks the number of successful chats.
 final chatCounterProvider = StateProvider<int>((ref) => 0);
 
 final openRouterClientProvider = Provider<OpenRouterApiClient>(
-      (ref) => OpenRouterApiClient(),
+  (ref) => OpenRouterApiClient(),
 );
 final groqClientProvider = Provider<GroqApiClient>(
-      (ref) => GroqApiClient(),
+  (ref) => GroqApiClient(),
 );
 final legiScanClientProvider = Provider<LegiScanApiClient>(
-      (ref) => LegiScanApiClient(),
+  (ref) => LegiScanApiClient(),
 );
 final congressClientProvider = Provider<CongressApiClient>(
-      (ref) => CongressApiClient(),
+  (ref) => CongressApiClient(),
 );
 
 final apiClientRepositoryProvider = Provider<ApiClientRepository>((ref) {
   final openRouterClient = ref.read(openRouterClientProvider);
-  final deepSeekClient = ref.read(deepseekApiClientProvider);  // From deepseek_providers.dart
+  final deepSeekClient =
+      ref.read(deepseekApiClientProvider); // From deepseek_providers.dart
   final groqClient = ref.read(groqClientProvider);
   final legiScanClient = ref.read(legiScanClientProvider);
   final congressClient = ref.read(congressClientProvider);
-  return ApiClientRepository(openRouterClient, deepSeekClient, groqClient, legiScanClient, congressClient);
+  return ApiClientRepository(openRouterClient, deepSeekClient, groqClient,
+      legiScanClient, congressClient);
 });
 
 final ragRepositoryProvider = Provider<RagRepository>((ref) {
@@ -47,7 +52,7 @@ final ragRepositoryProvider = Provider<RagRepository>((ref) {
 });
 
 final secureStorageProvider = Provider<SecureStorageRepository>(
-      (ref) => SecureStorageRepository(),
+  (ref) => SecureStorageRepository(),
 );
 
 // Viral growth service for referrals, reviews, sharing
@@ -55,13 +60,18 @@ final viralGrowthServiceProvider = Provider<ViralGrowthService>((ref) {
   return ViralGrowthService();
 });
 
+final dataConnectProvider = Provider<ExampleConnector>((ref) {
+  return ExampleConnector.instance;
+});
+
 final chatUseCaseProvider = Provider<ChatUseCase>((ref) {
   final repo = ref.read(ragRepositoryProvider);
-  return ChatUseCase(repo);
+  final connector = ref.read(dataConnectProvider);
+  return ChatUseCase(repo, connector);
 });
 
 final promptsUseCaseProvider = Provider<PromptsUseCase>(
-      (ref) => PromptsUseCase(),
+  (ref) => PromptsUseCase(),
 );
 
 final settingsUseCaseProvider = Provider<SettingsUseCase>((ref) {

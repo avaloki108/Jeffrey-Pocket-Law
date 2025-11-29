@@ -19,9 +19,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final List<ChatMessage> _messages = [];
   bool _isLoading = false;
 
+  String? _sessionId;
+
   @override
   void initState() {
     super.initState();
+    _sessionId = DateTime.now().millisecondsSinceEpoch.toString();
   }
 
   @override
@@ -51,10 +54,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
     try {
-      final ragRepository = ref.read(ragRepositoryProvider);
+      final chatUseCase = ref.read(chatUseCaseProvider);
       final selectedStateAbbr = ref.read(selectedStateProvider);
-      final response =
-          await ragRepository.performRAGQuery(text, selectedStateAbbr);
+
+      final response = await chatUseCase.sendMessage(text, selectedStateAbbr,
+          sessionId: _sessionId);
 
       setState(() {
         _messages.add(ChatMessage(
