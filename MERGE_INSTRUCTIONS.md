@@ -75,11 +75,14 @@ Once merged, you may want to:
 2. **Delete the `main` branch** (only after verifying merge success):
    ```bash
    # First verify all content is preserved
-   git log --oneline master..main  # Should be empty (all main commits now in master)
-   ls src/ package.json vite.config.ts  # Verify React files exist
-   ls android-app/  # Verify Flutter files still exist
+   git log --oneline --graph HEAD~5..HEAD  # Should show merge commit with two parents
    
-   # Then safely delete
+   # Verify files from both branches exist
+   test -d src/ && echo "✓ React src directory exists" || echo "✗ Missing React files"
+   test -f package.json && echo "✓ package.json exists" || echo "✗ Missing package.json"
+   test -d android-app/ && echo "✓ Flutter android-app directory exists" || echo "✗ Missing Flutter files"
+   
+   # Then safely delete the main branch
    git push origin --delete main
    ```
    
