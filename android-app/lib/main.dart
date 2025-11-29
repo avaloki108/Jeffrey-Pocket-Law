@@ -1,12 +1,16 @@
+import 'dart:ui' as ui;
+
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 import 'core/constants.dart';
 import 'core/themes.dart';
+import 'firebase_options.dart';
 import 'presentation/chat_screen.dart';
 import 'presentation/home_screen.dart';
 import 'presentation/prompts_screen.dart';
@@ -20,6 +24,17 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Enable Crashlytics error handling for Flutter and platform errors
+  FlutterError.onError = (FlutterErrorDetails details) {
+    // Forward to Crashlytics as fatal Flutter error
+    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+  };
+  // Also capture any asynchronous errors
+  ui.PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   // Initialize Google Mobile Ads in background (non-blocking)
   MobileAds.instance.initialize();
@@ -37,15 +52,28 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final NavigatorObserver? navigatorObserver;
+  const MyApp({super.key, this.navigatorObserver});
 
   @override
   Widget build(BuildContext context) {
+    // Create a Firebase Analytics observer to automatically log navigation events
+    // Use the injected observer if provided (for testing)
+    final observers = <NavigatorObserver>[];
+    if (navigatorObserver != null) {
+      observers.add(navigatorObserver!);
+    } else {
+      observers.add(FirebaseAnalyticsObserver(
+        analytics: FirebaseAnalytics.instance,
+      ));
+    }
+
     return MaterialApp(
       title: AppConstants.appName,
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       initialRoute: '/',
+      navigatorObservers: observers,
       onGenerateRoute: (settings) {
         // Handle routes with arguments
         if (settings.name == '/chat') {

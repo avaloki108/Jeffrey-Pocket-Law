@@ -91,3 +91,24 @@ pids
 .devcontainer/
 
 .spark-workbench-id
+
+# Qdrant storage and data files
+/android-app/qdrant_storage/aliases/data.json
+/android-app/qdrant_storage/collections/*/segments/*/payload_index/*/*
+/android-app/qdrant_storage/collections/*/segments/*/version.info
+/android-app/qdrant_storage/collections/*/wal/*
+/android-app/qdrant_storage/collections/*/*.json
+/android-app/qdrant_storage/collections/*/version.info
+/android-app/qdrant_storage/.qdrant_fs_check
+/android-app/qdrant_storage/raft_state.json
+
+# Keystore and keys
+key.properties
+android-app/upload-keystore.jks
+android-app/key.properties
+
+# Firebase
+firebase.exe
+
+# DataConnect
+dataconnect/.dataconnect/

@@ -1,0 +1,85 @@
+C:\USERS\JASON\ANDROIDSTUDIOPROJECTS\POCKET-LAWYER\ANDROID-APP
++---.dart_tool
+¦   +---dartpad
+¦   +---flutter_build
++---.idea
+¦   +---libraries
+¦   +---runConfigurations
++---android
+¦   +---.gradle
+¦   ¦   +---8.12
+¦   ¦   ¦   +---checksums
+¦   ¦   ¦   +---executionHistory
+¦   ¦   ¦   +---expanded
+¦   ¦   ¦   +---fileChanges
+¦   ¦   ¦   +---fileHashes
+¦   ¦   ¦   +---vcsMetadata
+¦   ¦   +---buildOutputCleanup
+¦   ¦   +---noVersion
+¦   ¦   +---vcs-1
+¦   +---.kotlin
+¦   ¦   +---sessions
+¦   +---app
+¦   ¦   +---src
+¦   ¦       +---debug
+¦   ¦       +---main
+¦   ¦       ¦   +---java
+¦   ¦       ¦   ¦   +---io
+¦   ¦       ¦   ¦       +---flutter
+¦   ¦       ¦   ¦           +---plugins
+¦   ¦       ¦   +---kotlin
+¦   ¦       ¦   ¦   +---ai
+¦   ¦       ¦   ¦   ¦   +---pocketlawyer
+¦   ¦       ¦   ¦   ¦       +---android_app
+¦   ¦       ¦   ¦   +---com
+¦   ¦       ¦   ¦       +---example
+¦   ¦       ¦   ¦           +---android_app
+¦   ¦       ¦   +---res
+¦   ¦       ¦       +---drawable
+¦   ¦       ¦       +---drawable-v21
+¦   ¦       ¦       +---mipmap-hdpi
+¦   ¦       ¦       +---mipmap-mdpi
+¦   ¦       ¦       +---mipmap-xhdpi
+¦   ¦       ¦       +---mipmap-xxhdpi
+¦   ¦       ¦       +---mipmap-xxxhdpi
+¦   ¦       ¦       +---values
+¦   ¦       ¦       +---values-night
+¦   ¦       ¦       +---values-v21
+¦   ¦       +---profile
+¦   +---build
+¦   ¦   +---reports
+¦   ¦       +---problems
+¦   +---gradle
+¦       +---wrapper
++---assets
+¦   +---images
++---build
+¦   +---native_assets
+¦   ¦   +---flutter-tester
+¦   ¦   +---windows
+¦   +---test_cache
+¦   ¦   +---build
+¦   +---unit_test_assets
+¦       +---assets
+¦       ¦   +---images
+¦       +---fonts
+¦       +---packages
+¦       ¦   +---cupertino_icons
+¦       ¦       +---assets
+¦       +---shaders
++---debug
++---lib
+¦   +---core
+¦   +---data
+¦   +---dataconnect_generated
+¦   ¦   +---.guides
+¦   +---domain
+¦   ¦   +---models
+¦   +---infrastructure
+¦   +---presentation
+¦   +---services
++---play-store-ready
++---test
++---web
+¦   +---icons
+

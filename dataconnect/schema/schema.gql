@@ -1,0 +1,72 @@
+# 1. USERS
+# The core identity. We use email as the unique key.
+type User @table(key: "email") {
+  email: String! 
+  createdAt: Timestamp! @default(expr: "request.time")
+  displayName: String
+  lastLogin: Timestamp
+}
+
+# 2. CHAT (THE JEFFERY INTERFACE)
+# We use UUIDs so you can easily sync these to the phone later.
+type ChatSession @table {
+  id: UUID! @default(expr: "uuidV4()")
+  user: User!
+  createdAt: Timestamp! @default(expr: "request.time")
+  title: String!
+  lastActivityAt: Timestamp
+}
+
+type ChatMessage @table {
+  id: UUID! @default(expr: "uuidV4()")
+  chatSession: ChatSession!
+  content: String!
+  sender: String! # "user", "ai", or "system"
+  timestamp: Timestamp! @default(expr: "request.time")
+  isSaved: Boolean
+}
+
+# 3. COURT CASES (THE NEW TRACKING FEATURE)
+# Tracks the legal issues users are stressing about.
+type CourtCase @table {
+  id: UUID! @default(expr: "uuidV4()")
+  user: User!
+  title: String!          # e.g. "Speeding Ticket"
+  caseNumber: String      # e.g. "CV-2024-123"
+  courtName: String       # e.g. "Denver County Court"
+  status: String          # e.g. "Open", "Closed"
+  description: String
+  createdAt: Timestamp! @default(expr: "request.time")
+}
+
+# Events/Dates linked to a specific case
+type CaseEvent @table {
+  id: UUID! @default(expr: "uuidV4()")
+  courtCase: CourtCase!
+  date: Timestamp!
+  title: String!          # e.g. "Arraignment"
+  notes: String
+  isCompleted: Boolean
+}
+
+# 4. LEGAL KNOWLEDGE (JEFFERY'S BRAIN)
+# Includes the Vector field for AI Semantic Search.
+type LegalDocument @table {
+  documentId: String! @unique # We keep String here to match external IDs easily
+  title: String!
+  sourceUrl: String!
+  abstract: String
+  documentType: String
+  publicationDate: Date
+  createdAt: Timestamp! @default(expr: "request.time")
+  # THE AI FIELD:
+  descriptionEmbedding: Vector @col(size: 1536)
+}
+
+# Optional: Allows users to "Bookmark" specific laws/docs
+type SavedDocument @table(key: ["user", "legalDocument"]) {
+  user: User!
+  legalDocument: LegalDocument!
+  savedAt: Timestamp! @default(expr: "request.time")
+  notes: String
+}

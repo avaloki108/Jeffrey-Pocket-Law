@@ -247,6 +247,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 FloatingActionButton(
+                  heroTag: "chatSendFab",
                   onPressed: _isLoading
                       ? null
                       : () => _sendMessage(_messageController.text),

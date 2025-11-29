@@ -1,3 +1,4 @@
+import 'package:android_app/dataconnect_generated/generated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,6 +27,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ];
 
   void _onItemTapped(int index) => setState(() => _selectedIndex = index);
+
+  Future<void> _testCreateCase() async {
+    try {
+      print("⚖️ Attempting to talk to Jeffery...");
+
+      // Using the singleton instance from the generated code
+      await ExampleConnector.instance.createCourtCase(
+          userEmail: "tester@example.com", // Ensure this user exists (from your seed data)
+          title: "Speeding Ticket Test",
+          status: "Open"
+      ).execute();
+
+      print("✅ SUCCESS: Case created in database!");
+    } catch (e) {
+      print("❌ ERROR: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +94,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: "testDbFab",
+        onPressed: _testCreateCase,
+        label: const Text("Test DB"),
+        icon: const Icon(Icons.add),
+        backgroundColor: Colors.blue,
       ),
     );
   }

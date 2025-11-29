@@ -1,0 +1,38 @@
+# Get User Details
+query GetUser($email: String!) @auth(level: USER) {
+  # FIX: We must pass the primary key inside a 'key' object
+  user(key: { email: $email }) {
+    email
+    displayName
+    createdAt
+  }
+}
+
+# Get My Cases
+query GetMyCases($userEmail: String!) @auth(level: USER) {
+  # FIX: We filter on the nested user object
+  courtCases(where: { user: { email: { eq: $userEmail } } }) {
+    id
+    title
+    caseNumber
+    status
+    events: caseEvents_on_courtCase {
+      title
+      date
+      isCompleted
+    }
+  }
+}
+
+# Get Chat History
+query GetChatHistory($sessionId: UUID!) @auth(level: USER) {
+  # FIX: Pass the UUID inside the key object
+  chatSession(key: { id: $sessionId }) {
+    title
+    messages: chatMessages_on_chatSession(orderBy: { timestamp: ASC }) {
+      sender
+      content
+      timestamp
+    }
+  }
+}

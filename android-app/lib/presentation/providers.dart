@@ -9,6 +9,7 @@ import '../domain/settings_usecase.dart';
 import '../infrastructure/congress_api_client.dart';
 import '../infrastructure/legiscan_api_client.dart';
 import '../infrastructure/open_router_api_client.dart';
+import '../infrastructure/groq_api_client.dart';
 import '../services/viral_growth_service.dart';
 import 'deepseek_providers.dart';
 
@@ -21,6 +22,9 @@ final chatCounterProvider = StateProvider<int>((ref) => 0);
 final openRouterClientProvider = Provider<OpenRouterApiClient>(
       (ref) => OpenRouterApiClient(),
 );
+final groqClientProvider = Provider<GroqApiClient>(
+      (ref) => GroqApiClient(),
+);
 final legiScanClientProvider = Provider<LegiScanApiClient>(
       (ref) => LegiScanApiClient(),
 );
@@ -31,9 +35,10 @@ final congressClientProvider = Provider<CongressApiClient>(
 final apiClientRepositoryProvider = Provider<ApiClientRepository>((ref) {
   final openRouterClient = ref.read(openRouterClientProvider);
   final deepSeekClient = ref.read(deepseekApiClientProvider);  // From deepseek_providers.dart
+  final groqClient = ref.read(groqClientProvider);
   final legiScanClient = ref.read(legiScanClientProvider);
   final congressClient = ref.read(congressClientProvider);
-  return ApiClientRepository(openRouterClient, deepSeekClient, legiScanClient, congressClient);
+  return ApiClientRepository(openRouterClient, deepSeekClient, groqClient, legiScanClient, congressClient);
 });
 
 final ragRepositoryProvider = Provider<RagRepository>((ref) {

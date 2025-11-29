@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367506430362",
+    "project_id": "jeffery-friendly-pocket-law",
+    "storage_bucket": "jeffery-friendly-pocket-law.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367506430362:android:6bd7530f3c0607ee1e8223",
+        "android_client_info": {
+          "package_name": "ai.pocketlawyer.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGObS0HqbDLIyr24WwO5pPW64sKb_nK0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

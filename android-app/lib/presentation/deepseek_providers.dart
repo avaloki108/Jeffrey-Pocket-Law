@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,7 +9,7 @@ final deepseekApiClientProvider = Provider<DeepSeekApiClient>((ref) {
   final baseUrl = dotenv.env['DEEPSEEK_BASE_URL'] ?? 'https://api.deepseek.com/v1';
   final model = dotenv.env['DEEPSEEK_MODEL'] ?? 'deepseek-chat';
   if (key.isEmpty) {
-    throw StateError('DEEPSEEK_API_KEY is not set');
+    if (kDebugMode) debugPrint('Warning: DEEPSEEK_API_KEY is not set. DeepSeek calls will fail.');
   }
   return DeepSeekApiClient(apiKey: key, baseUrl: baseUrl, defaultModel: model);
 });
