@@ -26,9 +26,9 @@ When merging these unrelated branches, you may encounter conflicts in these file
 - **Recommendation**: Keep master's version and append any React-specific entries from main that aren't already covered
 
 ### `.github/` directory
-- **master**: Contains copilot agent configurations
+- **master**: Contains Qodana code quality workflow
 - **main**: Contains `dependabot.yml` for npm package updates
-- **Recommendation**: Keep both - they serve different purposes. Merge main's dependabot.yml into master's .github/ directory
+- **Recommendation**: Keep both - they serve different purposes. Add main's dependabot.yml into master's .github/ directory
 
 ### Resolution Steps for Conflicts
 
@@ -75,8 +75,9 @@ Once merged, you may want to:
 2. **Delete the `main` branch** (only after verifying merge success):
    ```bash
    # First verify all content is preserved
-   git log --oneline main..master  # Should show merge commit
-   git log --oneline master..main  # Should be empty (all main commits in master)
+   git log --oneline master..main  # Should be empty (all main commits now in master)
+   ls src/ package.json vite.config.ts  # Verify React files exist
+   ls android-app/  # Verify Flutter files still exist
    
    # Then safely delete
    git push origin --delete main
