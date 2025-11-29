@@ -52,7 +52,7 @@ class GetChatHistoryChatSession {
     return json;
   }
 
-  GetChatHistoryChatSession({
+  const GetChatHistoryChatSession({
     required this.title,
     required this.messages,
   });
@@ -95,7 +95,7 @@ class GetChatHistoryChatSessionMessages {
     return json;
   }
 
-  GetChatHistoryChatSessionMessages({
+  const GetChatHistoryChatSessionMessages({
     required this.sender,
     required this.content,
     required this.timestamp,
@@ -133,7 +133,7 @@ class GetChatHistoryData {
     return json;
   }
 
-  GetChatHistoryData({
+  const GetChatHistoryData({
     this.chatSession,
   });
 }
@@ -168,7 +168,7 @@ class GetChatHistoryVariables {
     return json;
   }
 
-  GetChatHistoryVariables({
+  const GetChatHistoryVariables({
     required this.sessionId,
   });
 }

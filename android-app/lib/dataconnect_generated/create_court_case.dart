@@ -48,7 +48,7 @@ class CreateCourtCaseCourtCaseInsert {
     return json;
   }
 
-  CreateCourtCaseCourtCaseInsert({
+  const CreateCourtCaseCourtCaseInsert({
     required this.id,
   });
 }
@@ -82,7 +82,7 @@ class CreateCourtCaseData {
     return json;
   }
 
-  CreateCourtCaseData({
+  const CreateCourtCaseData({
     required this.courtCase_insert,
   });
 }
@@ -125,7 +125,7 @@ class CreateCourtCaseVariables {
     return json;
   }
 
-  CreateCourtCaseVariables({
+  const CreateCourtCaseVariables({
     required this.userEmail,
     required this.title,
     required this.status,

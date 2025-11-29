@@ -68,7 +68,7 @@ class GetMyCasesCourtCases {
     return json;
   }
 
-  GetMyCasesCourtCases({
+  const GetMyCasesCourtCases({
     required this.id,
     required this.title,
     this.caseNumber,
@@ -116,7 +116,7 @@ class GetMyCasesCourtCasesEvents {
     return json;
   }
 
-  GetMyCasesCourtCasesEvents({
+  const GetMyCasesCourtCasesEvents({
     required this.title,
     required this.date,
     this.isCompleted,
@@ -154,7 +154,7 @@ class GetMyCasesData {
     return json;
   }
 
-  GetMyCasesData({
+  const GetMyCasesData({
     required this.courtCases,
   });
 }
@@ -189,7 +189,7 @@ class GetMyCasesVariables {
     return json;
   }
 
-  GetMyCasesVariables({
+  const GetMyCasesVariables({
     required this.userEmail,
   });
 }

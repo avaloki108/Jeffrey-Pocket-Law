@@ -2,7 +2,7 @@ part of 'generated.dart';
 
 class CreateUserVariablesBuilder {
   String email;
-  Optional<String> _displayName = Optional.optional(nativeFromJson, nativeToJson);
+  final Optional<String> _displayName = Optional.optional(nativeFromJson, nativeToJson);
 
   final FirebaseDataConnect _dataConnect;  CreateUserVariablesBuilder displayName(String? t) {
    _displayName.value = t;
@@ -51,7 +51,7 @@ class CreateUserUserUpsert {
     return json;
   }
 
-  CreateUserUserUpsert({
+  const CreateUserUserUpsert({
     required this.email,
   });
 }
@@ -85,7 +85,7 @@ class CreateUserData {
     return json;
   }
 
-  CreateUserData({
+  const CreateUserData({
     required this.user_upsert,
   });
 }
@@ -132,7 +132,7 @@ class CreateUserVariables {
     return json;
   }
 
-  CreateUserVariables({
+  const CreateUserVariables({
     required this.email,
     required this.displayName,
   });
