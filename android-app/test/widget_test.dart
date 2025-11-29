@@ -9,7 +9,7 @@ void main() {
 
   setUpAll(() async {
     // Provide minimal env for tests with biometric disabled
-    dotenv.testLoad(fileInput: 'DISABLE_BIOMETRIC=true');
+    await dotenv.load(fileName: 'test_env');
   });
 
   testWidgets('App loads and shows splash screen', (WidgetTester tester) async {

@@ -66,4 +66,5 @@ flutter:
   assets:
     - .env
     - .env.example
+    - test_env
     - assets/images/logo.png
