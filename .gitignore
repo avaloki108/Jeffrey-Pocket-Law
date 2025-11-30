@@ -30,7 +30,7 @@ android-app/key.properties
 google-services.json
 GoogleService-Info.plist
 firebase.exe
-
+firebase-config.json
 # =========================
 # FLUTTER & DART
 # =========================

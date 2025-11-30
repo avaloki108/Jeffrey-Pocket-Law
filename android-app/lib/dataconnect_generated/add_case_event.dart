@@ -48,7 +48,7 @@ class AddCaseEventCaseEventInsert {
     return json;
   }
 
-  const AddCaseEventCaseEventInsert({
+  AddCaseEventCaseEventInsert({
     required this.id,
   });
 }
@@ -82,7 +82,7 @@ class AddCaseEventData {
     return json;
   }
 
-  const AddCaseEventData({
+  AddCaseEventData({
     required this.caseEvent_insert,
   });
 }
@@ -125,7 +125,7 @@ class AddCaseEventVariables {
     return json;
   }
 
-  const AddCaseEventVariables({
+  AddCaseEventVariables({
     required this.caseId,
     required this.title,
     required this.date,

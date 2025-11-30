@@ -1,0 +1,42 @@
+# 1. Create a User
+# We keep upsert here because the ID is the email, which we ARE providing.
+mutation CreateUser($email: String!, $displayName: String) @auth(level: USER) {
+  user_upsert(data: {
+    email: $email,
+    displayName: $displayName
+  })
+}
+
+# 2. Create a Court Case
+# CHANGED: upsert -> insert (Let the server generate the UUID)
+mutation CreateCourtCase($userEmail: String!, $title: String!, $status: String!) @auth(level: USER) {
+  courtCase_insert(data: {
+    user: { email: $userEmail },
+    title: $title,
+    status: $status
+    # createdAt is auto-filled by @default
+  })
+}
+
+# 3. Add an Event
+# CHANGED: upsert -> insert
+mutation AddCaseEvent($caseId: UUID!, $title: String!, $date: Timestamp!) @auth(level: USER) {
+  caseEvent_insert(data: {
+    courtCase: { id: $caseId },
+    title: $title,
+    date: $date,
+    isCompleted: false
+  })
+}
+
+# 4. Send Message
+# CHANGED: upsert -> insert
+# CHANGED: Removed 'timestamp: _now' (The schema default handles this)
+mutation SendMessage($sessionId: UUID!, $content: String!, $sender: String!) @auth(level: USER) {
+  chatMessage_insert(data: {
+    chatSession: { id: $sessionId },
+    content: $content,
+    sender: $sender,
+    isSaved: false
+  })
+}
