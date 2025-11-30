@@ -100,16 +100,19 @@ class CreateUserData {
 @immutable
 class CreateUserVariables {
   final String email;
-  late final Optional<String> displayName;
+  final Optional<String> displayName;
   @Deprecated(
       'fromJson is deprecated for Variable classes as they are no longer required for deserialization.')
   CreateUserVariables.fromJson(Map<String, dynamic> json)
-      : email = nativeFromJson<String>(json['email']) {
-    displayName = Optional.optional(nativeFromJson, nativeToJson);
-    displayName.value = json['displayName'] == null
-        ? null
-        : nativeFromJson<String>(json['displayName']);
-  }
+      : email = nativeFromJson<String>(json['email']),
+        displayName = (() {
+          final Optional<String> opt =
+              Optional.optional(nativeFromJson, nativeToJson);
+          opt.value = json['displayName'] == null
+              ? null
+              : nativeFromJson<String>(json['displayName']);
+          return opt;
+        })();
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {

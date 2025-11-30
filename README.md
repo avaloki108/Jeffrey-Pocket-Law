@@ -1,6 +1,5 @@
-<div align="center">
-
 # 🏛️ Jeffrey
+
 _AI-powered legal research & assistance._
 
 ![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-blueviolet)
@@ -11,23 +10,28 @@ _AI-powered legal research & assistance._
 </div>
 
 ## Overview
+
 Jeffrey is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
 
 ## Naming
-Jeffrey is the current product name. The project was previously branded as "Pocket Lawyer" and the repository name may still reference the legacy identity for continuity. Over time code references (paths, package names, legacy data folders like `previous/`) may still contain the old name—these are historical and will be migrated incrementally to avoid disruption.
 
-Why the rebrand:
+Jeffrey is the current product name. The project was previously branded as **Pocket Lawyer** and the repository name may still reference the legacy identity for continuity. Historical folders (e.g. `previous/`) or identifiers may retain the old name until touched by related changes.
+
+### Why the rebrand
+
 - Distinct, humanized assistant persona
-- Cleaner differentiation from generic legal tooling
-- Better extensibility for multi-domain features beyond strictly “pocket” use cases
+- Clear differentiation from generic legal tooling
+- Extensible for multi-domain features beyond strictly “pocket” use cases
 
-Migration guidance:
+### Migration guidance
+
 1. Keep repository slug until downstream integrations (CI, store listings) are updated.
 2. Prefer “Jeffrey” in UI, docs, marketing copy.
-3. Only refactor internal identifiers when touching related code (avoid churn PRs).
-4. Secret names and environment keys can remain stable unless clarity requires renaming.
+3. Refactor internal identifiers only when modifying related code (avoid churn PRs).
+4. Secret names and environment keys remain stable unless clarity requires renaming.
 
 ## Key Features
+
 - 🔍 Multi-provider AI (Gemini, OpenAI, Groq, DeepSeek, OpenRouter, local Ollama)
 - 📚 Legal data integrations (CourtListener, LegiScan, Congress.gov)
 - 🧠 Vector search (Pinecone + optional local Qdrant storage)
@@ -39,22 +43,26 @@ Migration guidance:
 - 🚀 CI/CD Android build workflow (GitHub Actions)
 
 ## Architecture
-```
+
+```text
 android-app/          # Flutter project (main application)
-	lib/                # Application code organized by layers
+  lib/                # Application code organized by layers
 src/                  # Web (Vite + React) client
 dataconnect/          # DataConnect schema & seed examples
 lib/dataconnect/      # Shared service integrations
 play-store-ready/     # Release artifacts & guides
 previous/             # Legacy / historical assets and data snapshots
 ```
+
 Core concepts:
+
 1. Separation of concerns: domain vs presentation vs infrastructure.
 2. Environment-driven configuration via `.env` (never committed).
 3. External AI and legal APIs abstracted behind service interfaces.
-4. Vector search optionally hybrid (remote Pinecone + local Qdrant).
+4. Optional hybrid vector search (remote Pinecone + local Qdrant).
 
 ## Tech Stack
+
 - Flutter (Dart) for Android (and potential desktop targets)
 - React + TypeScript (Vite) for web
 - Pinecone / Qdrant for embeddings storage
@@ -64,6 +72,7 @@ Core concepts:
 ## Getting Started
 
 ### Prerequisites
+
 - Flutter SDK (`flutter --version` ≥ 3.x)
 - Java 17 (for Android builds)
 - Android SDK / Emulator
@@ -71,24 +80,28 @@ Core concepts:
 - pnpm or npm/yarn (front-end dependencies)
 
 ### Clone
+
 ```bash
 git clone https://github.com/avaloki108/pocket-lawyer.git
 cd pocket-lawyer
 ```
 
 ### Install (Mobile)
+
 ```bash
 cd android-app
 flutter pub get
 ```
 
 ### Install (Web)
+
 ```bash
 pnpm install   # or npm install
 pnpm dev       # starts Vite dev server
 ```
 
 ## Environment Configuration
+
 Environment secrets are NOT committed. Create your own `.env` locally (and in GitHub Actions via repo secrets). Suggested sample:
 
 ```bash
@@ -115,11 +128,14 @@ MIXPANEL_TOKEN=your_key
 ```
 
 ### GitHub Actions Secrets
+
 Add corresponding secrets under: Settings → Secrets and variables → Actions
+
 - `GOOGLE_SERVICES_JSON` (raw firebase json for Android)
 - All API keys listed above
 
 ## Running the App
+
 ```bash
 # Mobile (debug)
 cd android-app
@@ -133,7 +149,9 @@ pnpm dev
 ```
 
 ## CI/CD
+
 Android build & artifact publishing handled by `.github/workflows/android_build.yml`:
+
 - Installs Java + Flutter
 - Injects secrets (`.env`, `google-services.json`)
 - Builds debug APK
@@ -142,22 +160,26 @@ Android build & artifact publishing handled by `.github/workflows/android_build.
 Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN` and uncommenting triggers if disabled.
 
 ## Security & Secrets
+
 - `.gitignore` excludes keystores, API keys, local properties.
 - Treat `.env` values as confidential; rotate compromised keys immediately.
 - Avoid echoing secret contents in CI logs.
 
 ## Data & Storage
+
 - Hive used for local persistence; secure layers wrap sensitive records.
 - Vector DB: Pinecone primary; local Qdrant folders are ignored for safety.
 - Historic data snapshots retained under `previous/` for reference.
 
 ## Contributing
+
 1. Fork & branch: `feat/your-feature`
 2. Keep changes focused, add tests (if applicable)
 3. Run linters / formatters
 4. Open PR with clear description & rationale
 
 ## Roadmap (High-Level)
+
 - ✅ Multi-provider AI integration
 - 🔄 Enhanced retrieval augmentation (expanding legal corpus)
 - 🛡️ End-to-end encryption for sensitive queries
@@ -166,6 +188,7 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 - 📊 Usage analytics (privacy-preserving)
 
 ## Troubleshooting
+
 | Issue | Fix |
 |-------|-----|
 | Missing Android SDK | Set `sdk.dir` in `local.properties` |
@@ -174,6 +197,7 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 | Slow model responses | Try alternate provider or local Ollama |
 
 ## License
+
 MIT © Jeffrey Contributors. See `LICENSE`.
 
 ---
