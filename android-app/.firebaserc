@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "jeffery-friendly-pocket-law"
+  },
+  "targets": {},
+  "etags": {
+    "jeffery-friendly-pocket-law": {
+      "extensionInstances": {
+        "firestore-stripe-payments": "429a70d932194e685d0803c8998039ffb295b4e52c56324d2bd5b5cd1acffee5"
+      }
+    }
   }
 }

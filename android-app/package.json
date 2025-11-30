@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node functions/lib/server.js",
+    "preinstall": "cd functions && npm install"
+  },
+  "engines": {
+    "node": "22"
+  }
+}

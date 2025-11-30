@@ -55,7 +55,7 @@ lib/generated/
 **/android/gradlew.bat
 **/android/gradle/
 **/android/app/build/
-
+android-app/dataconnect/.dataconnect
 # User specific Android paths
 android/.gradle/
 android/**/local.properties
