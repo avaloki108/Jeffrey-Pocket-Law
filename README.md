@@ -1,7 +1,7 @@
 <div align="center">
 
-# 🏛️ Pocket Lawyer
-_Your AI-powered legal research & assistance companion._
+# 🏛️ Jeffrey
+_The Pocket Lawyer – AI-powered legal research & assistance._
 
 ![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-blueviolet)
 ![Flutter](https://img.shields.io/badge/flutter-3.x-blue)
@@ -11,7 +11,7 @@ _Your AI-powered legal research & assistance companion._
 </div>
 
 ## Overview
-Pocket Lawyer is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
+Jeffrey ("Pocket Lawyer") is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
 
 ## Key Features
 - 🔍 Multi-provider AI (Gemini, OpenAI, Groq, DeepSeek, OpenRouter, local Ollama)
@@ -160,7 +160,7 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 | Slow model responses | Try alternate provider or local Ollama |
 
 ## License
-MIT © Pocket Lawyer Contributors. See `LICENSE`.
+MIT © Jeffrey / Pocket Lawyer Contributors. See `LICENSE`.
 
 ---
-_This README replaces the initial template and removes all GitHub Spark template references._
+_This README replaces the initial template and removes all GitHub Spark template references. Primary product name: Jeffrey (Pocket Lawyer)._ 
