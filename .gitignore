@@ -1,99 +1,120 @@
-# Flutter / Dart
+# =========================
+# SECRETS & SECURITY (CRITICAL)
+# =========================
+# Environment variables
+.env
+*.env
+.env.*
+!.env.example
+android-app/.env
+android-app/**/.env
+
+# API Keys & Secrets code
+secrets.dart
+**/secrets.dart
+
+# Keystores & Signing Keys (Global Safe-guards)
+*.jks
+*.keystore
+*.p12
+*.pem
+key.properties
+*.key.properties
+keystore.properties
+local.properties
+**/local.properties
+android-app/upload-keystore.jks
+android-app/key.properties
+
+# Firebase & Services (Often contain project IDs/Keys)
+google-services.json
+GoogleService-Info.plist
+firebase.exe
+
+# =========================
+# FLUTTER & DART
+# =========================
 .dart_tool/
 .packages
 .pub-cache/
 build/
 **/build/
 coverage/
-secrets.dart
-# Environment & secrets
-.env
-*.env
-android-app/.env
-android-app/**/.env
-# Security
-**/secrets.dart
-# IDE / OS
-.idea/
-.vscode/
-*.iml
-*.log
-.DS_Store
-Thumbs.db
+lib/generated/
+.flutter-plugins
+.flutter-plugins-dependencies
 
-# iOS / macOS
-ios/Pods/
-macos/Pods/
-**/Flutter/ephemeral/
+# =========================
+# ANDROID
+# =========================
+# Standard Android excludes
+.gradle/
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/gradle/
+**/android/app/build/
 
-# Android
+# User specific Android paths
 android/.gradle/
 android/**/local.properties
 android/**/gradlew*
 android/**/gradle/wrapper/
 
-# Xcode
-xcuserdata/
-DerivedData/
+# =========================
+# IOS / MACOS
+# =========================
+ios/Pods/
+macos/Pods/
+**/Flutter/ephemeral/
+.DS_Store
 
-# Generated assets
-lib/generated/
-
-# Hive boxes (if used locally for dev)
-*.hive
-*.lock.hive
-
-# Other
-.sentryclirc
-
-# Logs
-logs
-*.log
+# =========================
+# WEB / NODE / REACT
+# =========================
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
+dist/
+dist-ssr/
 *-dist
 *.local
-
-# Node.js / React
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-dist/
 .next/
 out/
 .cache/
 .parcel-cache/
 *.tsbuildinfo
 
-# Editor directories and files
-.vscode/*
+# =========================
+# IDE & TOOLS
+# =========================
+.idea/
+.vscode/
 !.vscode/extensions.json
-.idea
-.DS_Store
+*.iml
+*.log
+*.swp
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-
-.env
-**/agent-eval-report*
-packages
-pids
-.file-manifest
-.devcontainer/
-
+Thumbs.db
+.sentryclirc
+logs/
 .spark-workbench-id
 
-# Qdrant storage and data files
+# =========================
+# DATABASE & STORAGE
+# =========================
+# Hive
+*.hive
+*.lock.hive
+
+# Qdrant (Vector DB)
 /android-app/qdrant_storage/aliases/data.json
 /android-app/qdrant_storage/collections/*/segments/*/payload_index/*/*
 /android-app/qdrant_storage/collections/*/segments/*/version.info
@@ -103,13 +124,13 @@ pids
 /android-app/qdrant_storage/.qdrant_fs_check
 /android-app/qdrant_storage/raft_state.json
 
-# Keystore and keys
-key.properties
-android-app/upload-keystore.jks
-android-app/key.properties
-
-# Firebase
-firebase.exe
-
 # DataConnect
 dataconnect/.dataconnect/
+
+# Misc
+**/agent-eval-report*
+packages
+pids
+.file-manifest
+.devcontainer/
+```
