@@ -56,7 +56,7 @@ class GetUserUser {
     return json;
   }
 
-  GetUserUser({
+  const GetUserUser({
     required this.email,
     this.displayName,
     required this.createdAt,
@@ -94,7 +94,7 @@ class GetUserData {
     return json;
   }
 
-  GetUserData({
+  const GetUserData({
     this.user,
   });
 }
@@ -129,7 +129,7 @@ class GetUserVariables {
     return json;
   }
 
-  GetUserVariables({
+  const GetUserVariables({
     required this.email,
   });
 }

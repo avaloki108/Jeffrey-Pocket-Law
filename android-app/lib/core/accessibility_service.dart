@@ -9,7 +9,8 @@ class AccessibilityService {
 
   /// Announce text to screen readers
   void announce(String message) {
-    SemanticsService.announce(message, TextDirection.ltr);
+    SemanticsBinding.instance.sendSemanticsUpdate(
+        AccessibilityAnnouncement(message, textDirection: TextDirection.ltr));
   }
 
   /// Create accessible button with proper semantics

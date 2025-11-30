@@ -1,21 +1,22 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/auth_repository.dart';
-import '../services/complete_legal_ai_service.dart';
 import '../data/api_client_repository.dart';
+import '../data/auth_repository.dart';
 import '../data/rag_repository.dart';
 import '../data/secure_storage_repository.dart';
+import '../dataconnect_generated/generated.dart';
 import '../domain/chat_usecase.dart';
 import '../domain/prompts_usecase.dart';
 import '../domain/settings_usecase.dart';
 import '../infrastructure/congress_api_client.dart';
+import '../infrastructure/groq_api_client.dart';
 import '../infrastructure/legiscan_api_client.dart';
 import '../infrastructure/open_router_api_client.dart';
-import '../infrastructure/groq_api_client.dart';
+import '../services/complete_legal_ai_service.dart';
 import '../services/viral_growth_service.dart';
 import 'deepseek_providers.dart';
-import '../dataconnect_generated/generated.dart';
+
 // import 'package:firebase_data_connect/firebase_data_connect.dart'; // Unused directly here, but used in generated.dart
 
 // Export prompt selected provider for cross-screen communication
@@ -63,9 +64,8 @@ final apiClientRepositoryProvider = Provider<ApiClientRepository>((ref) {
 });
 
 final ragRepositoryProvider = Provider<RagRepository>((ref) {
-  final apiClient = ref.read(apiClientRepositoryProvider);
   final legalService = ref.read(completeLegalAIServiceProvider);
-  return RagRepositoryImpl(apiClient, legalService);
+  return RagRepositoryImpl(legalService);
 });
 
 final secureStorageProvider = Provider<SecureStorageRepository>(

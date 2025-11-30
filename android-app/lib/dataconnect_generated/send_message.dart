@@ -48,7 +48,7 @@ class SendMessageChatMessageInsert {
     return json;
   }
 
-  SendMessageChatMessageInsert({
+  const SendMessageChatMessageInsert({
     required this.id,
   });
 }
@@ -82,7 +82,7 @@ class SendMessageData {
     return json;
   }
 
-  SendMessageData({
+  const SendMessageData({
     required this.chatMessage_insert,
   });
 }
@@ -125,7 +125,7 @@ class SendMessageVariables {
     return json;
   }
 
-  SendMessageVariables({
+  const SendMessageVariables({
     required this.sessionId,
     required this.content,
     required this.sender,

@@ -1,4 +1,3 @@
-import 'api_client_repository.dart';
 import '../services/complete_legal_ai_service.dart';
 
 abstract class RagRepository {
@@ -8,10 +7,9 @@ abstract class RagRepository {
 
 // Real implementation using external APIs and Firebase AI
 class RagRepositoryImpl implements RagRepository {
-  final ApiClientRepository _apiClient;
   final CompleteLegalAIService _legalService;
 
-  RagRepositoryImpl(this._apiClient, this._legalService);
+  RagRepositoryImpl(this._legalService);
 
   @override
   Future<String> query(String prompt) async {

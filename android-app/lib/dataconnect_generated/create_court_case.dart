@@ -48,17 +48,17 @@ class CreateCourtCaseCourtCaseInsert {
     return json;
   }
 
-  CreateCourtCaseCourtCaseInsert({
+  const CreateCourtCaseCourtCaseInsert({
     required this.id,
   });
 }
 
 @immutable
 class CreateCourtCaseData {
-  final CreateCourtCaseCourtCaseInsert courtCase_insert;
+  final CreateCourtCaseCourtCaseInsert courtCaseInsert;
   CreateCourtCaseData.fromJson(dynamic json):
   
-  courtCase_insert = CreateCourtCaseCourtCaseInsert.fromJson(json['courtCase_insert']);
+  courtCaseInsert = CreateCourtCaseCourtCaseInsert.fromJson(json['courtCase_insert']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -69,21 +69,21 @@ class CreateCourtCaseData {
     }
 
     final CreateCourtCaseData otherTyped = other as CreateCourtCaseData;
-    return courtCase_insert == otherTyped.courtCase_insert;
+    return courtCaseInsert == otherTyped.courtCaseInsert;
     
   }
   @override
-  int get hashCode => courtCase_insert.hashCode;
+  int get hashCode => courtCaseInsert.hashCode;
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
-    json['courtCase_insert'] = courtCase_insert.toJson();
+    json['courtCase_insert'] = courtCaseInsert.toJson();
     return json;
   }
 
-  CreateCourtCaseData({
-    required this.courtCase_insert,
+  const CreateCourtCaseData({
+    required this.courtCaseInsert,
   });
 }
 
@@ -125,10 +125,9 @@ class CreateCourtCaseVariables {
     return json;
   }
 
-  CreateCourtCaseVariables({
+  const CreateCourtCaseVariables({
     required this.userEmail,
     required this.title,
     required this.status,
   });
 }
-

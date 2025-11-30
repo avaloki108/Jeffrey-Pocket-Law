@@ -48,17 +48,17 @@ class AddCaseEventCaseEventInsert {
     return json;
   }
 
-  AddCaseEventCaseEventInsert({
+  const AddCaseEventCaseEventInsert({
     required this.id,
   });
 }
 
 @immutable
 class AddCaseEventData {
-  final AddCaseEventCaseEventInsert caseEvent_insert;
+  final AddCaseEventCaseEventInsert caseEventInsert;
   AddCaseEventData.fromJson(dynamic json):
   
-  caseEvent_insert = AddCaseEventCaseEventInsert.fromJson(json['caseEvent_insert']);
+  caseEventInsert = AddCaseEventCaseEventInsert.fromJson(json['caseEvent_insert']);
   @override
   bool operator ==(Object other) {
     if(identical(this, other)) {
@@ -69,21 +69,21 @@ class AddCaseEventData {
     }
 
     final AddCaseEventData otherTyped = other as AddCaseEventData;
-    return caseEvent_insert == otherTyped.caseEvent_insert;
+    return caseEventInsert == otherTyped.caseEventInsert;
     
   }
   @override
-  int get hashCode => caseEvent_insert.hashCode;
+  int get hashCode => caseEventInsert.hashCode;
   
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> json = {};
-    json['caseEvent_insert'] = caseEvent_insert.toJson();
+    json['caseEvent_insert'] = caseEventInsert.toJson();
     return json;
   }
 
-  AddCaseEventData({
-    required this.caseEvent_insert,
+  const AddCaseEventData({
+    required this.caseEventInsert,
   });
 }
 
@@ -125,10 +125,9 @@ class AddCaseEventVariables {
     return json;
   }
 
-  AddCaseEventVariables({
+  const AddCaseEventVariables({
     required this.caseId,
     required this.title,
     required this.date,
   });
 }
-
