@@ -1,11 +1,11 @@
 name: android_app
 description: "Pocket Lawyer - Legal AI Assistant"
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -76,7 +76,6 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-    - .env
     - .env.example
     - test_env
     - assets/images/logo.png

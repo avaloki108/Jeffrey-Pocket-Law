@@ -5,13 +5,14 @@
 build/
 **/build/
 coverage/
-
+secrets.dart
 # Environment & secrets
 .env
 *.env
 android-app/.env
 android-app/**/.env
-
+# Security
+**/secrets.dart
 # IDE / OS
 .idea/
 .vscode/
