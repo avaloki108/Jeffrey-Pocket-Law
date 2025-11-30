@@ -5,12 +5,55 @@ import 'package:flutter/foundation.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_ai/firebase_ai.dart';
+
+import '../infrastructure/groq_api_client.dart';
 
 class CompleteLegalAIService {
   final Dio _dio = Dio(BaseOptions(
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 60),
   ));
+
+  final GroqApiClient? _groqApiClient;
+
+  CompleteLegalAIService({GroqApiClient? groqApiClient})
+      : _groqApiClient = groqApiClient;
+
+  // ============================================
+  // FIREBASE AI LOGIC (GEMINI) + GROQ
+  // ============================================
+
+  /// Generate text using Firebase AI Logic (Gemini) or Groq
+  Future<String?> generateWithCombinedAI(String promptText) async {
+    // 1. Try Groq first for speed (Llama 3 70b is very fast)
+    if (_groqApiClient != null) {
+      try {
+        if (kDebugMode) print('Attempting Groq generation...');
+        final groqResponse = await _groqApiClient!.generate(
+          prompt: promptText,
+          model: 'llama3-70b-8192', // Fast and capable legal reasoning
+        );
+        return groqResponse;
+      } catch (e) {
+        if (kDebugMode) print('Groq generation failed: $e. Falling back to Gemini.');
+      }
+    }
+
+    // 2. Fallback to Gemini (Firebase AI)
+    try {
+      if (kDebugMode) print('Attempting Gemini generation...');
+      // Initialize the Gemini Developer API backend service
+      final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
+
+      final prompt = [Content.text(promptText)];
+      final response = await model.generateContent(prompt);
+      return response.text;
+    } catch (e) {
+      debugPrint('Firebase AI Error: $e');
+      return null;
+    }
+  }
 
   // ============================================
   // LAW LIBRARY APIS - YOUR ACTUAL ENDPOINTS
@@ -25,7 +68,8 @@ class CompleteLegalAIService {
     String? dateBefore,
     int page = 1,
   }) async {
-    final apiKey = dotenv.env['COURTLISTENER_API_KEY']; // Your key: 2ad5f6b8c6f5bed4da797054dda8644ff2f98821
+    final apiKey = dotenv.env['COURTLISTENER_API_KEY'];
+    if (kDebugMode) print('Searching CourtListener: "$query", Court: $court');
 
     try {
       final response = await _dio.get(
@@ -46,8 +90,11 @@ class CompleteLegalAIService {
         },
       );
 
+      if (kDebugMode) print('CourtListener Status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final cases = response.data['results'] as List;
+        if (kDebugMode) print('CourtListener Found: ${cases.length} cases');
 
         // Process and enhance case data
         final enhancedCases = cases.map((case_) {
@@ -85,7 +132,8 @@ class CompleteLegalAIService {
     int? year,
     String? status, // introduced, passed, failed, enacted
   }) async {
-    final apiKey = dotenv.env['LEGISCAN_API_KEY']; // Your key: 6da9b568d057150d0f032566d5ca54e4
+    final apiKey = dotenv.env['LEGISCAN_API_KEY'];
+    if (kDebugMode) print('Searching LegiScan: "$query", State: $state');
 
     try {
       // First search for relevant bills
@@ -99,6 +147,8 @@ class CompleteLegalAIService {
           'year': year ?? 2,  // Last 2 years default
         },
       );
+
+      if (kDebugMode) print('LegiScan Status: ${searchResponse.data['status']}');
 
       if (searchResponse.data['status'] == 'OK') {
         final bills = searchResponse.data['searchresult'];
@@ -173,7 +223,8 @@ class CompleteLegalAIService {
     String? chamber, // house, senate, both
     String? type, // bill, resolution, amendment
   }) async {
-    final apiKey = dotenv.env['CONGRESS_GOV_API_KEY']; // Your key: mXdjKaTeDzfwekxPaPILvoa8malhIenpSNtmCkwI
+    final apiKey = dotenv.env['CONGRESS_GOV_API_KEY'];
+    if (kDebugMode) print('Searching Congress.gov: "$query"');
 
     try {
       final response = await _dio.get(
@@ -313,12 +364,10 @@ class CompleteLegalAIService {
       }
     }
 
-    // Generate AI analysis using OpenRouter with legal context
-    final aiResponse = await _generateLegalAnalysis(
-      userQuery: userQuery,
-      legalContext: combinedContext.toString(),
-      citations: citations,
-    );
+    // Generate AI analysis using Firebase AI Logic (Gemini) or Groq
+    final aiResponse = await generateWithCombinedAI(
+      _buildLegalPrompt(userQuery: userQuery, legalContext: combinedContext.toString(), citations: citations),
+    ) ?? 'Unable to generate analysis. Please try again.';
 
     return {
       'ai_analysis': aiResponse,
@@ -328,7 +377,38 @@ class CompleteLegalAIService {
     };
   }
 
-  /// Generate AI analysis using OpenRouter with your API key
+  String _buildLegalPrompt({
+    required String userQuery,
+    required String legalContext,
+    required List<String> citations,
+  }) {
+    return '''You are "Jeffrey", a friendly and helpful legal assistant. Your goal is to provide accurate legal information based on real sources, but to make it simple, easy to understand, and digestible for everyone.
+
+STEP 1: ANALYZE (Internal)
+*   Base your analysis strictly on the PROVIDED LEGAL SOURCES below.
+*   Identify specific cases, statutes, and jurisdictional considerations (e.g., is this state or federal?).
+*   Verify the facts against the sources.
+
+STEP 2: RESPOND AS JEFFREY (Output)
+*   **ABSOLUTELY NO LEGAL JARGON.** If you must use a legal term, explain it immediately in plain English.
+*   **Be Simple & Clear:** Explain things as if you were talking to a friend over coffee. Use short sentences.
+*   **Digestible Structure:** Break down complex topics into easy steps or bullet points.
+*   **Cite Sources Naturally:** Mention the specific cases or statutes you found, but explain *why* they matter in simple terms (e.g., "According to the case of Smith v. Jones, the court decided...").
+*   **Jurisdiction:** Clearly state which state or laws you are referring to.
+*   **Disclaimer:** Always end with a friendly reminder that you are an AI and this is information, not professional legal advice.
+
+LEGAL SOURCES PROVIDED:
+$legalContext
+
+CITATIONS AVAILABLE:
+${citations.join('\n')}
+
+User Question: "$userQuery"
+
+Answer as Jeffrey:''';
+  }
+
+  /// Legacy method - kept for reference but unused in favor of Firebase AI
   Future<String> _generateLegalAnalysis({
     required String userQuery,
     required String legalContext,

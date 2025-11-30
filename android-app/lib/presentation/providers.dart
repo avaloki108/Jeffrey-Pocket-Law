@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
+import '../data/auth_repository.dart';
+import '../services/complete_legal_ai_service.dart';
 import '../data/api_client_repository.dart';
 import '../data/rag_repository.dart';
 import '../data/secure_storage_repository.dart';
@@ -22,6 +25,14 @@ export '../domain/models/prompt_selected_notifier.dart'
 /// Tracks the number of successful chats.
 final chatCounterProvider = StateProvider<int>((ref) => 0);
 
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository();
+});
+
+final authStateProvider = StreamProvider<User?>((ref) {
+  return ref.watch(authRepositoryProvider).authStateChanges;
+});
+
 final openRouterClientProvider = Provider<OpenRouterApiClient>(
   (ref) => OpenRouterApiClient(),
 );
@@ -34,6 +45,11 @@ final legiScanClientProvider = Provider<LegiScanApiClient>(
 final congressClientProvider = Provider<CongressApiClient>(
   (ref) => CongressApiClient(),
 );
+
+final completeLegalAIServiceProvider = Provider<CompleteLegalAIService>((ref) {
+  final groqClient = ref.read(groqClientProvider);
+  return CompleteLegalAIService(groqApiClient: groqClient);
+});
 
 final apiClientRepositoryProvider = Provider<ApiClientRepository>((ref) {
   final openRouterClient = ref.read(openRouterClientProvider);
@@ -48,7 +64,8 @@ final apiClientRepositoryProvider = Provider<ApiClientRepository>((ref) {
 
 final ragRepositoryProvider = Provider<RagRepository>((ref) {
   final apiClient = ref.read(apiClientRepositoryProvider);
-  return RagRepositoryImpl(apiClient);
+  final legalService = ref.read(completeLegalAIServiceProvider);
+  return RagRepositoryImpl(apiClient, legalService);
 });
 
 final secureStorageProvider = Provider<SecureStorageRepository>(

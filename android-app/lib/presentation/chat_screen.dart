@@ -162,7 +162,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               color: Colors.blue.shade900,
                               fontSize: 13)),
                       Text(
-                          'Powered by GPT-4o-mini with real-time legal database access',
+                          'Powered by Gemini & Groq with real-time legal database access',
                           style: TextStyle(
                               color: Colors.blue.shade800, fontSize: 11)),
                     ],

@@ -135,7 +135,7 @@ class CreateUserVariables {
     return json;
   }
 
-  CreateUserVariables({
+  const CreateUserVariables({
     required this.email,
     required this.displayName,
   });

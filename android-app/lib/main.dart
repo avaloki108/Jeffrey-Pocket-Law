@@ -11,6 +11,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'core/constants.dart';
 import 'core/themes.dart';
 import 'firebase_options.dart';
+import 'presentation/auth_screen.dart';
 import 'presentation/chat_screen.dart';
 import 'presentation/home_screen.dart';
 import 'presentation/prompts_screen.dart';
@@ -27,7 +28,6 @@ Future<void> main() async {
 
   // Enable Crashlytics error handling for Flutter and platform errors
   FlutterError.onError = (FlutterErrorDetails details) {
-    // Forward to Crashlytics as fatal Flutter error
     FirebaseCrashlytics.instance.recordFlutterFatalError(details);
   };
   // Also capture any asynchronous errors
@@ -36,10 +36,9 @@ Future<void> main() async {
     return true;
   };
 
-  // Initialize Google Mobile Ads in background (non-blocking)
+  // Initialize Google Mobile Ads
   MobileAds.instance.initialize();
 
-  // Attempt to load .env file (optional). If missing, proceed; keys may come from --dart-define.
   try {
     await dotenv.load(fileName: '.env');
   } catch (_) {
@@ -57,8 +56,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a Firebase Analytics observer to automatically log navigation events
-    // Use the injected observer if provided (for testing)
     final observers = <NavigatorObserver>[];
     if (navigatorObserver != null) {
       observers.add(navigatorObserver!);
@@ -75,17 +72,17 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       navigatorObservers: observers,
       onGenerateRoute: (settings) {
-        // Handle routes with arguments
         if (settings.name == '/chat') {
           return MaterialPageRoute(
             builder: (context) => const ChatScreen(),
             settings: settings,
           );
         }
-        // Default routes
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(builder: (context) => const SplashScreen());
+          case '/auth':
+            return MaterialPageRoute(builder: (context) => const AuthScreen());
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());
           case '/prompts':

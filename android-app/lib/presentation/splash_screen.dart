@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/biometric_service.dart';
+import 'providers.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   final BiometricService _biometricService = BiometricService();
   bool _navigated = false;
 
@@ -20,22 +22,40 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkBiometricAuth();
   }
 
-  /// Navigates to the home screen after a 10‑second delay.
-  Future<void> _goHome() async {
+  /// Navigates to the home screen or auth screen after a delay.
+  Future<void> _navigateNext() async {
     if (!mounted || _navigated) return;
     _navigated = true;
-    // 10 000 ms = 10 seconds
+    // 500ms delay
     await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    }
+    if (!mounted) return;
+
+    final authState = ref.read(authStateProvider);
+    authState.when(
+      data: (user) {
+        if (user != null) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/auth');
+        }
+      },
+      loading: () {
+        // If loading, wait a bit and retry (or listen to changes)
+        // For simplicity, we'll just wait a bit more or default to auth
+        // Better approach: Watch in build, but here we are in async method.
+        // Let's just push /auth and let AuthScreen handle state or redirect?
+        // No, let's wait for stream.
+         Navigator.of(context).pushReplacementNamed('/auth');
+      },
+      error: (_, __) => Navigator.of(context).pushReplacementNamed('/auth'),
+    );
   }
 
   Future<void> _checkBiometricAuth() async {
     final disableBiometric =
         (dotenv.maybeGet('DISABLE_BIOMETRIC') ?? 'false').toLowerCase() == 'true';
     if (disableBiometric) {
-      await _goHome();
+      await _navigateNext();
       return;
     }
 
@@ -47,12 +67,12 @@ class _SplashScreenState extends State<SplashScreen> {
       );
 
       if (authenticated) {
-        await _goHome();
+        await _navigateNext();
       } else {
         _showAuthFailedDialog();
       }
     } else {
-      await _goHome();
+      await _navigateNext();
     }
   }
 

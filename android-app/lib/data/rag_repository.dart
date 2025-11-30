@@ -1,15 +1,17 @@
 import 'api_client_repository.dart';
+import '../services/complete_legal_ai_service.dart';
 
 abstract class RagRepository {
   Future<String> query(String prompt);
   Future<Map<String, dynamic>> performRAGQuery(String prompt, String state);
 }
 
-// Real implementation using external APIs
+// Real implementation using external APIs and Firebase AI
 class RagRepositoryImpl implements RagRepository {
   final ApiClientRepository _apiClient;
+  final CompleteLegalAIService _legalService;
 
-  RagRepositoryImpl(this._apiClient);
+  RagRepositoryImpl(this._apiClient, this._legalService);
 
   @override
   Future<String> query(String prompt) async {
@@ -20,95 +22,23 @@ class RagRepositoryImpl implements RagRepository {
   @override
   Future<Map<String, dynamic>> performRAGQuery(String prompt, String state) async {
     try {
-      // Determine jurisdiction from prompt or use provided state
-      final jurisdiction = state.isNotEmpty ? state : _extractJurisdiction(prompt);
-      final legalTopic = _extractLegalTopic(prompt);
-
-      // Try state laws first if jurisdiction detected
-      if (jurisdiction != null && !_isFederalJurisdiction(jurisdiction)) {
-        final stateData = await _apiClient.getStateLaws(
-          state: jurisdiction,
-          legalTopic: legalTopic ?? 'general',
-          searchQuery: prompt,
-        );
-
-        // Accept several possible shapes from LegiScan
-        dynamic possibleResults;
-        if (stateData['searchresult'] is List) {
-          possibleResults = stateData['searchresult'];
-        } else if (stateData['searchresult'] is Map) {
-          final sr = stateData['searchresult'] as Map;
-            if (sr['results'] is List) {
-              possibleResults = sr['results'];
-            }
-        }
-
-        if (possibleResults is List && possibleResults.isNotEmpty) {
-          final firstResult = possibleResults.first as Map<String, dynamic>;
-          return {
-            'content': _formatStateLawResponse(firstResult, jurisdiction, stateData['ai_summary'] as String?),
-            'sources': [
-              {
-                'citation': 'LegiScan - ${firstResult['bill_number'] ?? firstResult['number'] ?? 'Unknown'}',
-                'url': firstResult['url'] ?? '',
-                'type': 'state_law',
-              }
-            ],
-            'confidence': 0.85,
-          };
-        }
-
-        // If only AI summary came back
-        if (stateData['ai_summary'] is String) {
-          return {
-            'content': stateData['ai_summary'],
-            'sources': [],
-            'confidence': 0.65,
-          };
-        }
-      }
-
-      // Try federal laws
-      final federalData = await _apiClient.getFederalLaws(
-        legalTopic: legalTopic ?? 'general',
-        searchQuery: prompt,
-      );
-
-      if (federalData.containsKey('bills')) {
-        final bills = federalData['bills'] as List?;
-        if (bills != null && bills.isNotEmpty) {
-          final firstBill = bills[0] as Map<String, dynamic>;
-          return {
-            'content': _formatFederalLawResponse(firstBill, federalData['ai_summary'] as String?),
-            'sources': [
-              {
-                'citation': 'Congress.gov - ${firstBill['number'] ?? 'Unknown'}',
-                'url': firstBill['url'] ?? '',
-                'type': 'federal_law',
-              }
-            ],
-            'confidence': 0.90,
-          };
-        }
-      }
-
-      if (federalData['ai_summary'] is String) {
-        return {
-          'content': federalData['ai_summary'],
-          'sources': [],
-          'confidence': 0.70,
-        };
-      }
-
-      // Fallback to OpenRouter (legacy method alias)
-      final aiResponse = await _apiClient.queryOpenAi(
-        'Based on the following legal question, provide a comprehensive answer citing relevant laws and cases: $prompt',
+      // Use the comprehensive query from CompleteLegalAIService which uses Firebase AI + Law APIs
+      final result = await _legalService.comprehensiveLegalQuery(
+        userQuery: prompt,
+        jurisdiction: state.isNotEmpty ? state : null,
+        searchCaseLaw: true,
+        searchStatutes: true,
+        searchCongress: true,
       );
 
       return {
-        'content': aiResponse,
-        'sources': [],
-        'confidence': 0.60,
+        'content': result['ai_analysis'],
+        'sources': (result['citations'] as List?)?.map((c) => {
+          'citation': c,
+          'url': '', // URL logic could be enhanced if returned from service
+          'type': 'legal_source',
+        }).toList() ?? [],
+        'confidence': 0.85,
       };
     } catch (e) {
       // Ultimate fallback
@@ -118,96 +48,5 @@ class RagRepositoryImpl implements RagRepository {
         'confidence': 0.0,
       };
     }
-  }
-
-  String? _extractJurisdiction(String prompt) {
-    // Case-insensitive extraction - look for state names or abbreviations
-    final statePattern = RegExp(
-      r'\b(California|New York|Texas|Florida|Nevada|Arizona|Colorado|Utah|Washington|Oregon|Idaho|Montana|Wyoming|North Dakota|South Dakota|Nebraska|Kansas|Oklahoma|Arkansas|Louisiana|Mississippi|Alabama|Tennessee|Kentucky|Indiana|Illinois|Wisconsin|Minnesota|Iowa|Missouri|North Carolina|South Carolina|Georgia|Virginia|West Virginia|Maryland|Delaware|New Jersey|Pennsylvania|Ohio|Michigan|Connecticut|Rhode Island|Massachusetts|Vermont|New Hampshire|Maine|Hawaii|Alaska)\b|\b([A-Z]{2})\b',
-      caseSensitive: false,
-    );
-    final match = statePattern.firstMatch(prompt);
-    if (match != null) {
-      return match.group(1) ?? match.group(2);
-    }
-    return null;
-  }
-
-  String? _extractLegalTopic(String prompt) {
-    final topics = [
-      'employment',
-      'real estate',
-      'criminal',
-      'traffic',
-      'business',
-      'health',
-      'family',
-      'tax',
-      'immigration',
-      'consumer',
-    ];
-    final promptLower = prompt.toLowerCase();
-
-    for (final topic in topics) {
-      if (promptLower.contains(topic)) {
-        return topic;
-      }
-    }
-    return null;
-  }
-
-  bool _isFederalJurisdiction(String jurisdiction) {
-    return jurisdiction.toLowerCase() == 'federal' ||
-        jurisdiction.toLowerCase() == 'us' ||
-        jurisdiction.toLowerCase() == 'united states';
-  }
-
-  String _formatStateLawResponse(Map<String, dynamic> result, String state, String? summary) {
-    final title = result['title'] ?? result['name'] ?? 'Unknown Title';
-    final billNumber = result['bill_number'] ?? result['number'] ?? '';
-
-    final buffer = StringBuffer();
-    if (summary != null) {
-      buffer.writeln(summary);
-      buffer.writeln();
-      buffer.writeln('---');
-      buffer.writeln();
-      buffer.writeln('**Source Information:**');
-      buffer.writeln('* **Bill:** $billNumber ($state)');
-      buffer.writeln('* **Title:** $title');
-    } else {
-      final description = result['description'] ?? result['summary'] ?? '';
-      buffer.writeln('**$title**');
-      buffer.writeln();
-      buffer.writeln(description);
-      buffer.writeln();
-      buffer.writeln('*Bill Number: $billNumber*');
-    }
-    buffer.writeln();
-    buffer.writeln('> Disclaimer: This is general information, not legal advice.');
-    return buffer.toString();
-  }
-
-  String _formatFederalLawResponse(Map<String, dynamic> bill, String? summary) {
-    final title = bill['title'] ?? 'Unknown Title';
-    final number = bill['number'] ?? '';
-
-    final buffer = StringBuffer();
-    if (summary != null) {
-      buffer.writeln(summary);
-      buffer.writeln();
-      buffer.writeln('---');
-      buffer.writeln();
-      buffer.writeln('**Source Information:**');
-      buffer.writeln('* **Bill:** $number (Federal)');
-      buffer.writeln('* **Title:** $title');
-    } else {
-      buffer.writeln('**$title**');
-      buffer.writeln();
-      buffer.writeln('*Bill Number: $number*');
-    }
-    buffer.writeln();
-    buffer.writeln('> Disclaimer: This is general information, not legal advice.');
-    return buffer.toString();
   }
 }
