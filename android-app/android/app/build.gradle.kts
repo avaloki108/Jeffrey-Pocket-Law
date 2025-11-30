@@ -30,15 +30,15 @@ android {
         multiDexEnabled = true
     }
 
-    // Enable Java 8+ APIs via core library desugaring
+    // Enable Java 11+ APIs via core library desugaring
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
         isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     signingConfigs {
