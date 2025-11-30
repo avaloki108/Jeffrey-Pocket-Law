@@ -124,6 +124,9 @@ logs/
 /android-app/qdrant_storage/.qdrant_fs_check
 /android-app/qdrant_storage/raft_state.json
 
+# Root-level Qdrant storage (for Docker Compose setup)
+qdrant_storage/
+
 # DataConnect
 dataconnect/.dataconnect/
 

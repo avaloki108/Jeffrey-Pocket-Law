@@ -148,6 +148,70 @@ flutter build apk --debug
 pnpm dev
 ```
 
+## Running Qdrant Locally (Vector Database for RAG)
+
+Jeffrey supports both **Pinecone** (cloud-based) and **Qdrant** (local/self-hosted) for vector search in RAG workflows. To run Qdrant locally for development:
+
+### Prerequisites
+
+- Docker installed and running
+
+### Correct Docker Command
+
+The correct image name is `qdrant/qdrant` (not just `qdrant`):
+
+```bash
+# Pull the Qdrant image
+docker pull qdrant/qdrant
+
+# Run Qdrant standalone
+docker run -p 6333:6333 -p 6334:6334 \
+  -v $(pwd)/qdrant_storage:/qdrant/storage:z \
+  qdrant/qdrant
+```
+
+### Using Docker Compose (Recommended)
+
+A [`docker-compose.yml`](./docker-compose.yml) file is included in the project root for easier management:
+
+```bash
+# Start Qdrant
+docker-compose up -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f qdrant
+
+# Stop Qdrant
+docker-compose down
+```
+
+### Accessing Qdrant
+
+- **REST API**: http://localhost:6333
+- **gRPC API**: http://localhost:6334
+- **Web Dashboard**: http://localhost:6333/dashboard
+
+### Optional: Qdrant Web UI
+
+To enable a separate management UI, uncomment the `qdrant-ui` service in [`docker-compose.yml`](./docker-compose.yml) and restart:
+
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+Then access the UI at http://localhost:8080
+
+### Integration Notes
+
+- Qdrant provides a **local alternative** to Pinecone for development/testing
+- Data persists in `./qdrant_storage/` (gitignored)
+- Use Qdrant for offline development or when you prefer self-hosted infrastructure
+- Switch between Pinecone and Qdrant by configuring the appropriate client in the Flutter app's RAG repository layer
+
 ## CI/CD
 
 Android build & artifact publishing handled by `.github/workflows/android_build.yml`:
