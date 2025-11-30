@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🏛️ Jeffrey
-_The Pocket Lawyer – AI-powered legal research & assistance._
+_AI-powered legal research & assistance._
 
 ![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-blueviolet)
 ![Flutter](https://img.shields.io/badge/flutter-3.x-blue)
@@ -11,7 +11,21 @@ _The Pocket Lawyer – AI-powered legal research & assistance._
 </div>
 
 ## Overview
-Jeffrey ("Pocket Lawyer") is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
+Jeffrey is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
+
+## Naming
+Jeffrey is the current product name. The project was previously branded as "Pocket Lawyer" and the repository name may still reference the legacy identity for continuity. Over time code references (paths, package names, legacy data folders like `previous/`) may still contain the old name—these are historical and will be migrated incrementally to avoid disruption.
+
+Why the rebrand:
+- Distinct, humanized assistant persona
+- Cleaner differentiation from generic legal tooling
+- Better extensibility for multi-domain features beyond strictly “pocket” use cases
+
+Migration guidance:
+1. Keep repository slug until downstream integrations (CI, store listings) are updated.
+2. Prefer “Jeffrey” in UI, docs, marketing copy.
+3. Only refactor internal identifiers when touching related code (avoid churn PRs).
+4. Secret names and environment keys can remain stable unless clarity requires renaming.
 
 ## Key Features
 - 🔍 Multi-provider AI (Gemini, OpenAI, Groq, DeepSeek, OpenRouter, local Ollama)
@@ -160,7 +174,7 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 | Slow model responses | Try alternate provider or local Ollama |
 
 ## License
-MIT © Jeffrey / Pocket Lawyer Contributors. See `LICENSE`.
+MIT © Jeffrey Contributors. See `LICENSE`.
 
 ---
-_This README replaces the initial template and removes all GitHub Spark template references. Primary product name: Jeffrey (Pocket Lawyer)._ 
+_This README replaces the initial template and removes all GitHub Spark template references. Primary product name: Jeffrey (formerly Pocket Lawyer)._ 
