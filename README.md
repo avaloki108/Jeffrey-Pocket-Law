@@ -11,7 +11,7 @@ _AI-powered legal research & assistance._
 
 ## Overview
 
-Jeffrey is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers, structured legal data sources, and vector search for intelligent retrieval.
+Jeffrey is a cross‑platform legal AI assistant designed to accelerate statutory, case law, and legislative research while preserving user privacy. It integrates multiple model providers and structured legal data sources for intelligent retrieval.
 
 ## Naming
 
@@ -34,7 +34,7 @@ Jeffrey is the current product name. The project was previously branded as **Poc
 
 - 🔍 Multi-provider AI (Gemini, OpenAI, Groq, DeepSeek, OpenRouter, local Ollama)
 - 📚 Legal data integrations (CourtListener, LegiScan, Congress.gov)
-- 🧠 Vector search (Pinecone + optional local Qdrant storage)
+- 🧠 Vector search via Pinecone
 - 📱 Flutter Android application (primary mobile client)
 - 🌐 Vite + React web interface (in `src/`)
 - 🔐 Secure local storage (Hive + `flutter_secure_storage`)
@@ -59,13 +59,13 @@ Core concepts:
 1. Separation of concerns: domain vs presentation vs infrastructure.
 2. Environment-driven configuration via `.env` (never committed).
 3. External AI and legal APIs abstracted behind service interfaces.
-4. Optional hybrid vector search (remote Pinecone + local Qdrant).
+4. Cloud vector search via Pinecone.
 
 ## Tech Stack
 
 - Flutter (Dart) for Android (and potential desktop targets)
 - React + TypeScript (Vite) for web
-- Pinecone / Qdrant for embeddings storage
+- Pinecone for embeddings storage
 - Hive + Secure Storage for encrypted user/app state
 - Multiple AI inference providers (API-key gated)
 
@@ -148,70 +148,6 @@ flutter build apk --debug
 pnpm dev
 ```
 
-## Running Qdrant Locally (Vector Database for RAG)
-
-Jeffrey supports both **Pinecone** (cloud-based) and **Qdrant** (local/self-hosted) for vector search in RAG workflows. To run Qdrant locally for development:
-
-### Prerequisites
-
-- Docker installed and running
-
-### Correct Docker Command
-
-The correct image name is `qdrant/qdrant` (not just `qdrant`):
-
-```bash
-# Pull the Qdrant image
-docker pull qdrant/qdrant
-
-# Run Qdrant standalone
-docker run -p 6333:6333 -p 6334:6334 \
-  -v $(pwd)/qdrant_storage:/qdrant/storage:z \
-  qdrant/qdrant
-```
-
-### Using Docker Compose (Recommended)
-
-A [`docker-compose.yml`](./docker-compose.yml) file is included in the project root for easier management:
-
-```bash
-# Start Qdrant
-docker-compose up -d
-
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f qdrant
-
-# Stop Qdrant
-docker-compose down
-```
-
-### Accessing Qdrant
-
-- **REST API**: http://localhost:6333
-- **gRPC API**: http://localhost:6334
-- **Web Dashboard**: http://localhost:6333/dashboard
-
-### Optional: Qdrant Web UI
-
-To enable a separate management UI, uncomment the `qdrant-ui` service in [`docker-compose.yml`](./docker-compose.yml) and restart:
-
-```bash
-docker-compose down
-docker-compose up -d
-```
-
-Then access the UI at http://localhost:8080
-
-### Integration Notes
-
-- Qdrant provides a **local alternative** to Pinecone for development/testing
-- Data persists in `./qdrant_storage/` (gitignored)
-- Use Qdrant for offline development or when you prefer self-hosted infrastructure
-- Switch between Pinecone and Qdrant by configuring the appropriate client in the Flutter app's RAG repository layer
-
 ## CI/CD
 
 Android build & artifact publishing handled by `.github/workflows/android_build.yml`:
@@ -232,7 +168,7 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 ## Data & Storage
 
 - Hive used for local persistence; secure layers wrap sensitive records.
-- Vector DB: Pinecone primary; local Qdrant folders are ignored for safety.
+- Vector DB: Pinecone primary.
 - Historic data snapshots retained under `previous/` for reference.
 
 ## Contributing
@@ -264,5 +200,3 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 
 MIT © Jeffrey Contributors. See `LICENSE`.
 
----
-_This README replaces the initial template and removes all GitHub Spark template references. Primary product name: Jeffrey (formerly Pocket Lawyer)._ 
