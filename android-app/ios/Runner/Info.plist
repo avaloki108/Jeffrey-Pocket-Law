@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Android App</string>
+	<string>Jeffrey</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>android_app</string>
+	<string>Jeffrey</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,5 +45,31 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Biometric Authentication (Face ID / Touch ID) -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Jeffrey uses Face ID to securely authenticate and protect your legal data.</string>
+	<!-- Camera Access (if needed for document scanning in future) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Jeffrey may use the camera to scan legal documents.</string>
+	<!-- Photo Library Access (if needed for document import) -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Jeffrey may access your photo library to import legal documents.</string>
+	<!-- Network Security Configuration -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<!-- Firebase and other background modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<!-- Encryption compliance -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

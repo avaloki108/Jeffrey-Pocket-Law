@@ -52,7 +52,11 @@ flutter build apk
 flutter build appbundle
 
 # Build for iOS (requires macOS)
+cd ios && pod install && cd ..
 flutter build ios
+
+# Build iOS without codesign (for CI/testing)
+flutter build ios --debug --no-codesign
 ```
 
 ### Code Quality
