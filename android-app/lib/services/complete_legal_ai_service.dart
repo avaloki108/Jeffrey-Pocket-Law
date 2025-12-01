@@ -36,7 +36,9 @@ class CompleteLegalAIService {
         );
         return groqResponse;
       } catch (e) {
-        if (kDebugMode) print('Groq generation failed: $e. Falling back to Gemini.');
+        if (kDebugMode) {
+          print('Groq generation failed: $e. Falling back to Gemini.');
+        }
       }
     }
 
@@ -44,7 +46,8 @@ class CompleteLegalAIService {
     try {
       if (kDebugMode) print('Attempting Gemini generation...');
       // Initialize the Gemini Developer API backend service
-      final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
+      final model =
+          FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash');
 
       final prompt = [Content.text(promptText)];
       final response = await model.generateContent(prompt);
@@ -68,7 +71,8 @@ class CompleteLegalAIService {
     String? dateBefore,
     int page = 1,
   }) async {
-    final apiKey = dotenv.env['COURTLISTENER_API_KEY'];
+    final apiKey = dotenv.env['COURTLISTENER_API_KEY'] ??
+        const String.fromEnvironment('COURTLISTENER_API_KEY');
     if (kDebugMode) print('Searching CourtListener: "$query", Court: $court');
 
     try {
@@ -106,7 +110,8 @@ class CompleteLegalAIService {
             'citation': case_['citation']?.join(', '),
             'snippet': case_['snippet'],
             'download_url': case_['download_url'],
-            'absolute_url': 'https://www.courtlistener.com${case_['absolute_url']}',
+            'absolute_url':
+                'https://www.courtlistener.com${case_['absolute_url']}',
             'judge': case_['judge'],
             'importance_score': _calculateImportance(case_),
           };
@@ -132,7 +137,8 @@ class CompleteLegalAIService {
     int? year,
     String? status, // introduced, passed, failed, enacted
   }) async {
-    final apiKey = dotenv.env['LEGISCAN_API_KEY'];
+    final apiKey = dotenv.env['LEGISCAN_API_KEY'] ??
+        const String.fromEnvironment('LEGISCAN_API_KEY');
     if (kDebugMode) print('Searching LegiScan: "$query", State: $state');
 
     try {
@@ -144,11 +150,13 @@ class CompleteLegalAIService {
           'op': 'getSearch',
           'state': state ?? 'ALL',
           'query': query,
-          'year': year ?? 2,  // Last 2 years default
+          'year': year ?? 2, // Last 2 years default
         },
       );
 
-      if (kDebugMode) print('LegiScan Status: ${searchResponse.data['status']}');
+      if (kDebugMode) {
+        print('LegiScan Status: ${searchResponse.data['status']}');
+      }
 
       if (searchResponse.data['status'] == 'OK') {
         final bills = searchResponse.data['searchresult'];
@@ -178,7 +186,8 @@ class CompleteLegalAIService {
     }
   }
 
-  Future<Map<String, dynamic>?> _getBillDetails(String billId, String? apiKey) async {
+  Future<Map<String, dynamic>?> _getBillDetails(
+      String billId, String? apiKey) async {
     if (apiKey == null || apiKey.isEmpty || billId.isEmpty) return null;
     try {
       final response = await _dio.get(
@@ -210,7 +219,7 @@ class CompleteLegalAIService {
         };
       }
     } catch (e) {
-        debugPrint('Error fetching bill details: $e');
+      debugPrint('Error fetching bill details: $e');
     }
     return null;
   }
@@ -223,7 +232,8 @@ class CompleteLegalAIService {
     String? chamber, // house, senate, both
     String? type, // bill, resolution, amendment
   }) async {
-    final apiKey = dotenv.env['CONGRESS_GOV_API_KEY'];
+    final apiKey = dotenv.env['CONGRESS_GOV_API_KEY'] ??
+        const String.fromEnvironment('CONGRESS_GOV_API_KEY');
     if (kDebugMode) print('Searching Congress.gov: "$query"');
 
     try {
@@ -238,7 +248,8 @@ class CompleteLegalAIService {
           'format': 'json',
           'limit': 20,
           'offset': 0,
-          'fromDateTime': DateTime.now().subtract(Duration(days: 365)).toIso8601String(),
+          'fromDateTime':
+              DateTime.now().subtract(Duration(days: 365)).toIso8601String(),
           'toDateTime': DateTime.now().toIso8601String(),
           'sort': 'updateDate+desc',
         },
@@ -295,7 +306,6 @@ class CompleteLegalAIService {
     String? jurisdiction,
     String? dateRange,
   }) async {
-
     // Parallel search across all law libraries
     final futures = <Future>[];
 
@@ -321,7 +331,8 @@ class CompleteLegalAIService {
     // Process case law results
     if (searchCaseLaw && resultIndex < results.length) {
       final caseResults = results[resultIndex++] as Map<String, dynamic>;
-      if (caseResults['cases'] != null && (caseResults['cases'] as List).isNotEmpty) {
+      if (caseResults['cases'] != null &&
+          (caseResults['cases'] as List).isNotEmpty) {
         combinedContext.writeln('\n=== RELEVANT CASE LAW ===');
         for (final case_ in (caseResults['cases'] as List).take(3)) {
           combinedContext.writeln('Case: ${case_['case_name']}');
@@ -337,7 +348,8 @@ class CompleteLegalAIService {
     // Process legislation results
     if (searchStatutes && resultIndex < results.length) {
       final billResults = results[resultIndex++] as Map<String, dynamic>;
-      if (billResults['bills'] != null && (billResults['bills'] as List).isNotEmpty) {
+      if (billResults['bills'] != null &&
+          (billResults['bills'] as List).isNotEmpty) {
         combinedContext.writeln('\n=== RELEVANT LEGISLATION ===');
         for (final bill in (billResults['bills'] as List).take(3)) {
           combinedContext.writeln('Bill: ${bill['number']} - ${bill['title']}');
@@ -352,22 +364,28 @@ class CompleteLegalAIService {
     // Process congressional results
     if (searchCongress && resultIndex < results.length) {
       final congressResults = results[resultIndex++] as Map<String, dynamic>;
-      if (congressResults['bills'] != null && (congressResults['bills'] as List).isNotEmpty) {
+      if (congressResults['bills'] != null &&
+          (congressResults['bills'] as List).isNotEmpty) {
         combinedContext.writeln('\n=== FEDERAL LEGISLATION ===');
         for (final bill in (congressResults['bills'] as List).take(3)) {
           combinedContext.writeln('Bill: ${bill['type']} ${bill['number']}');
           combinedContext.writeln('Title: ${bill['title']}');
           combinedContext.writeln('Latest Action: ${bill['latest_action']}');
           combinedContext.writeln('Policy Area: ${bill['policy_area']}\n');
-          citations.add('${bill['congress']}th Congress, ${bill['type']} ${bill['number']}');
+          citations.add(
+              '${bill['congress']}th Congress, ${bill['type']} ${bill['number']}');
         }
       }
     }
 
     // Generate AI analysis using Firebase AI Logic (Gemini) or Groq
     final aiResponse = await generateWithCombinedAI(
-      _buildLegalPrompt(userQuery: userQuery, legalContext: combinedContext.toString(), citations: citations),
-    ) ?? 'Unable to generate analysis. Please try again.';
+          _buildLegalPrompt(
+              userQuery: userQuery,
+              legalContext: combinedContext.toString(),
+              citations: citations),
+        ) ??
+        'Unable to generate analysis. Please try again.';
 
     return {
       'ai_analysis': aiResponse,
@@ -436,7 +454,8 @@ Answer as Jeffrey:''';
     final sponsors = <String>[];
     if (bill['sponsors'] != null) {
       for (final sponsor in bill['sponsors']) {
-        sponsors.add('${sponsor['firstName']} ${sponsor['lastName']} (${sponsor['party']}-${sponsor['state']})');
+        sponsors.add(
+            '${sponsor['firstName']} ${sponsor['lastName']} (${sponsor['party']}-${sponsor['state']})');
       }
     }
     return sponsors;

@@ -20,15 +20,23 @@ class OpenRouterApiClient {
     double temperature = 0.3,
     int maxTokens = 1000,
   }) async {
-    final keyRaw = (dotenv.env['OPENROUTER_API_KEY'] ?? '').trim();
-    final openRouterKey = (keyRaw.isEmpty || keyRaw.toLowerCase().startsWith('your-')) ? '' : keyRaw;
+    final keyRaw = (dotenv.env['OPENROUTER_API_KEY'] ??
+            const String.fromEnvironment('OPENROUTER_API_KEY'))
+        .trim();
+    final openRouterKey =
+        (keyRaw.isEmpty || keyRaw.toLowerCase().startsWith('your-'))
+            ? ''
+            : keyRaw;
 
     // Allow env var model override for OpenRouter if provided
     final envRouterModel = (dotenv.env['OPENROUTER_MODEL'] ?? '').trim();
-    final resolvedRouterModel = envRouterModel.isNotEmpty ? envRouterModel : model;
+    final resolvedRouterModel =
+        envRouterModel.isNotEmpty ? envRouterModel : model;
 
     if (openRouterKey.isNotEmpty) {
-      if (kDebugMode) debugPrint('[AI] Using OpenRouter model: $resolvedRouterModel');
+      if (kDebugMode) {
+        debugPrint('[AI] Using OpenRouter model: $resolvedRouterModel');
+      }
       return _generateViaOpenRouter(
         apiKey: openRouterKey,
         prompt: prompt,

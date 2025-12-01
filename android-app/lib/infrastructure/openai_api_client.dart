@@ -18,7 +18,8 @@ class OpenAiApiClient {
     int maxTokens = 1000,
   }) async {
     try {
-      final apiKey = dotenv.env['OPENROUTER_API_KEY'] ?? '';
+      final apiKey = dotenv.env['OPENROUTER_API_KEY'] ??
+          const String.fromEnvironment('OPENROUTER_API_KEY');
       if (apiKey.isEmpty) {
         throw Exception('OPENROUTER_API_KEY not found in .env file');
       }
@@ -56,7 +57,8 @@ class OpenAiApiClient {
           }
         }
       }
-      throw Exception('Failed to get response from OpenRouter: ${response.statusCode}');
+      throw Exception(
+          'Failed to get response from OpenRouter: ${response.statusCode}');
     } catch (e) {
       throw Exception('OpenRouter API error: $e');
     }

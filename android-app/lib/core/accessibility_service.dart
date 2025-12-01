@@ -8,9 +8,12 @@ class AccessibilityService {
   AccessibilityService._internal();
 
   /// Announce text to screen readers
-  void announce(String message) {
-    SemanticsBinding.instance.sendSemanticsUpdate(
-        AccessibilityAnnouncement(message, textDirection: TextDirection.ltr));
+  /// Announce text to screen readers
+  void announce(String message, {BuildContext? context}) {
+    final view = context != null
+        ? View.of(context)
+        : WidgetsBinding.instance.platformDispatcher.views.first;
+    SemanticsService.sendAnnouncement(view, message, TextDirection.ltr);
   }
 
   /// Create accessible button with proper semantics
@@ -99,7 +102,10 @@ class AccessibilityService {
       onFocusChange: (hasFocus) {
         onFocusChange?.call();
         if (hasFocus) {
-          announce('Focused on ${focusNode.debugLabel ?? 'item'}');
+          announce(
+            'Focused on ${focusNode.debugLabel ?? 'item'}',
+            context: focusNode.context,
+          );
         }
       },
       child: child,

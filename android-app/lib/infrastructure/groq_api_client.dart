@@ -20,11 +20,14 @@ class GroqApiClient {
     double temperature = 0.3,
     int maxTokens = 1000,
   }) async {
-    final apiKey = (dotenv.env['GROQ_API_KEY'] ?? '').trim();
-    
+    final apiKey = (dotenv.env['GROQ_API_KEY'] ??
+            const String.fromEnvironment('GROQ_API_KEY'))
+        .trim();
+
     if (apiKey.isEmpty || apiKey.toLowerCase().startsWith('your-')) {
       if (kDebugMode) debugPrint('[AI] Groq API Key missing or invalid.');
-      throw Exception('Groq API Key is missing. Please set GROQ_API_KEY in .env');
+      throw Exception(
+          'Groq API Key is missing. Please set GROQ_API_KEY in .env');
     }
 
     // Allow env var model override

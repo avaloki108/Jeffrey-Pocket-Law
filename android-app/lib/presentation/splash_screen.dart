@@ -45,15 +45,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         // Better approach: Watch in build, but here we are in async method.
         // Let's just push /auth and let AuthScreen handle state or redirect?
         // No, let's wait for stream.
-         Navigator.of(context).pushReplacementNamed('/auth');
+        Navigator.of(context).pushReplacementNamed('/auth');
       },
       error: (_, __) => Navigator.of(context).pushReplacementNamed('/auth'),
     );
   }
 
   Future<void> _checkBiometricAuth() async {
-    final disableBiometric =
-        (dotenv.maybeGet('DISABLE_BIOMETRIC') ?? 'false').toLowerCase() == 'true';
+    final disableBiometric = (dotenv.maybeGet('DISABLE_BIOMETRIC') ??
+                const String.fromEnvironment('DISABLE_BIOMETRIC',
+                    defaultValue: 'false'))
+            .toLowerCase() ==
+        'true';
     if (disableBiometric) {
       await _navigateNext();
       return;
