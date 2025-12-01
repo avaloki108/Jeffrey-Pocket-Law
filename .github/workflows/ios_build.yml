@@ -75,7 +75,7 @@ jobs:
   # Optional: iOS Release build with signing (requires additional secrets)
   release-build:
     runs-on: macos-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     needs: build
     defaults:
       run:

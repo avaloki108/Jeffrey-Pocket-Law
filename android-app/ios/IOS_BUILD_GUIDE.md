@@ -203,7 +203,7 @@ Or in Xcode simulator: Features → Touch ID / Face ID → Enrolled
 #### Firebase Initialization Failed
 - Ensure `GoogleService-Info.plist` is in `ios/Runner/`
 - Verify bundle ID matches Firebase configuration
-- Current bundle ID: `com.example.androidApp`
+- Current bundle ID: `com.example.androidApp` (should be changed to a production identifier like `com.yourcompany.jeffrey` before App Store submission)
 
 ### Clean Build
 ```bash
@@ -244,7 +244,10 @@ Additional secrets needed for release signing:
 
 ## App Store Submission Checklist
 
-- [ ] Update bundle ID from `com.example.androidApp` to production ID
+- [ ] Update bundle ID from `com.example.androidApp` to production ID (e.g., `com.yourcompany.jeffrey`)
+  - Update in `ios/Runner.xcodeproj/project.pbxproj`
+  - Update in Firebase Console and regenerate `GoogleService-Info.plist`
+  - Update in `lib/firebase_options.dart` (iosBundleId field)
 - [ ] Configure App Store Connect with app metadata
 - [ ] Generate App Icons (already in Assets.xcassets)
 - [ ] Set version and build number in pubspec.yaml

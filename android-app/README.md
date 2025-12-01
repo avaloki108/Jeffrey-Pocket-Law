@@ -1,6 +1,6 @@
 # Jeffrey (Flutter)
 
-A cross-platform Flutter application providing a legal assistant interface with secure storage, biometric auth (Face ID/Touch ID on iOS, fingerprint on Android), and integration points for legislative and AI APIs.
+A cross-platform Flutter application providing a legal assistant interface with secure storage, biometric authentication (Face ID/Touch ID on iOS, biometric auth on Android), and integration points for legislative and AI APIs.
 
 ## Supported Platforms
 - **Android** - API 23+ (Android 6.0+)
