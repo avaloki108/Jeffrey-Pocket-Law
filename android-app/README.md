@@ -1,6 +1,10 @@
-# Pocket Lawyer (Flutter)
+# Jeffrey (Flutter)
 
-A Flutter application providing a legal assistant interface with secure storage, biometric auth, and integration points for legislative and AI APIs.
+A cross-platform Flutter application providing a legal assistant interface with secure storage, biometric authentication (Face ID/Touch ID on iOS, biometric auth on Android), and integration points for legislative and AI APIs.
+
+## Supported Platforms
+- **Android** - API 23+ (Android 6.0+)
+- **iOS** - iOS 13.0+ (see [ios/IOS_BUILD_GUIDE.md](ios/IOS_BUILD_GUIDE.md) for detailed setup)
 
 ## Features (Current State)
 - Splash screen with (optional) biometric authentication
@@ -81,6 +85,23 @@ flutter run ^
   --dart-define=DISABLE_BIOMETRIC=true
 ```
 
+## Running the App (macOS / iOS)
+From repository root:
+```bash
+cd android-app
+flutter pub get
+
+# Install iOS dependencies
+cd ios && pod install && cd ..
+
+# Run on iOS simulator
+flutter run
+
+# Run with biometric disabled (for simulator testing)
+flutter run --dart-define=DISABLE_BIOMETRIC=true
+```
+For detailed iOS build and deployment instructions, see [ios/IOS_BUILD_GUIDE.md](ios/IOS_BUILD_GUIDE.md).
+
 ## Running Tests
 ```
 cd android-app
@@ -104,6 +125,9 @@ The provided widget test:
 | Biometric dialog blocks tests | Set `DISABLE_BIOMETRIC=true` |
 | Keys not updating after change | `flutter clean` then restart, or ensure not overridden by dart-define |
 | AI summary missing | Check network (OpenRouter) or local model availability (Ollama) |
+| iOS pod install fails | `cd ios && pod deintegrate && pod install --repo-update` |
+| iOS signing issues | Open `ios/Runner.xcworkspace` in Xcode and configure signing |
+| iOS module not found | `flutter clean && cd ios && pod install && cd .. && flutter pub get` |
 
 ## Future Enhancements (Suggested)
 - Implement vector search (Pinecone) to augment prompts (RAG)

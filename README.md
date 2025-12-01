@@ -2,7 +2,7 @@
 
 _AI-powered legal research & assistance._
 
-![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Web-blueviolet)
+![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20Web-blueviolet)
 ![Flutter](https://img.shields.io/badge/flutter-3.x-blue)
 ![React](https://img.shields.io/badge/react-18.x-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -35,12 +35,12 @@ Jeffrey is the current product name. The project was previously branded as **Poc
 - 🔍 Multi-provider AI (Gemini, OpenAI, Groq, DeepSeek, OpenRouter, local Ollama)
 - 📚 Legal data integrations (CourtListener, LegiScan, Congress.gov)
 - 🧠 Vector search via Pinecone
-- 📱 Flutter Android application (primary mobile client)
+- 📱 Flutter Android & iOS applications (primary mobile clients)
 - 🌐 Vite + React web interface (in `src/`)
 - 🔐 Secure local storage (Hive + `flutter_secure_storage`)
 - 🕒 Notifications & scheduling foundation (local notifications + timezone)
 - ⚙️ Typed domain layers (`core`, `data`, `domain`, `presentation`)
-- 🚀 CI/CD Android build workflow (GitHub Actions)
+- 🚀 CI/CD Android & iOS build workflows (GitHub Actions)
 
 ## Architecture
 
@@ -63,7 +63,7 @@ Core concepts:
 
 ## Tech Stack
 
-- Flutter (Dart) for Android (and potential desktop targets)
+- Flutter (Dart) for Android and iOS (and potential desktop targets)
 - React + TypeScript (Vite) for web
 - Pinecone for embeddings storage
 - Hive + Secure Storage for encrypted user/app state
@@ -76,6 +76,8 @@ Core concepts:
 - Flutter SDK (`flutter --version` ≥ 3.x)
 - Java 17 (for Android builds)
 - Android SDK / Emulator
+- Xcode 15+ (for iOS builds, macOS only)
+- CocoaPods (for iOS: `sudo gem install cocoapods`)
 - Node.js 20+ (for web client)
 - pnpm or npm/yarn (front-end dependencies)
 
@@ -132,29 +134,51 @@ MIXPANEL_TOKEN=your_key
 Add corresponding secrets under: Settings → Secrets and variables → Actions
 
 - `GOOGLE_SERVICES_JSON` (raw firebase json for Android)
+- `GOOGLE_SERVICE_INFO_PLIST` (raw GoogleService-Info.plist for iOS)
 - All API keys listed above
 
 ## Running the App
 
 ```bash
-# Mobile (debug)
+# Mobile - Android (debug)
 cd android-app
 flutter run
 
+# Mobile - iOS (debug, requires macOS)
+cd android-app
+cd ios && pod install && cd ..
+flutter run
+
+# iOS with biometric disabled (for simulators)
+flutter run --dart-define=DISABLE_BIOMETRIC=true
+
 # Build APK (debug)
 flutter build apk --debug
+
+# Build iOS (debug, no codesign)
+flutter build ios --debug --no-codesign
 
 # Web
 pnpm dev
 ```
 
+For detailed iOS build instructions, see [android-app/ios/IOS_BUILD_GUIDE.md](android-app/ios/IOS_BUILD_GUIDE.md).
+
 ## CI/CD
 
-Android build & artifact publishing handled by `.github/workflows/android_build.yml`:
+**Android** build & artifact publishing handled by `.github/workflows/android_build.yml`:
 
 - Installs Java + Flutter
 - Injects secrets (`.env`, `google-services.json`)
 - Builds debug APK
+- Uploads artifact for download
+
+**iOS** build & artifact publishing handled by `.github/workflows/ios_build.yml`:
+
+- Runs on macOS
+- Installs Flutter + CocoaPods
+- Injects secrets (`.env`, `GoogleService-Info.plist`)
+- Builds debug iOS app (no codesign)
 - Uploads artifact for download
 
 Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN` and uncommenting triggers if disabled.
@@ -183,7 +207,8 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 - ✅ Multi-provider AI integration
 - 🔄 Enhanced retrieval augmentation (expanding legal corpus)
 - 🛡️ End-to-end encryption for sensitive queries
-- 📱 iOS & desktop build stabilization
+- ✅ iOS build stabilization
+- 📱 Desktop build stabilization
 - 🧪 Automated test suite expansion
 - 📊 Usage analytics (privacy-preserving)
 
@@ -193,6 +218,9 @@ Optional Qodana static analysis workflow present; enable by adding `QODANA_TOKEN
 |-------|-----|
 | Missing Android SDK | Set `sdk.dir` in `local.properties` |
 | Build fails (google-services) | Ensure `GOOGLE_SERVICES_JSON` secret exists |
+| iOS pod install fails | Run `cd ios && pod deintegrate && pod install --repo-update` |
+| iOS signing issues | Open `ios/Runner.xcworkspace` in Xcode and configure signing |
+| Biometric not working (simulator) | Use `--dart-define=DISABLE_BIOMETRIC=true` |
 | API auth errors | Confirm secret names & no stray quotes |
 | Slow model responses | Try alternate provider or local Ollama |
 
