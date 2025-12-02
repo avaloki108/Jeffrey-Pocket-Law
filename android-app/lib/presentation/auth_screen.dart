@@ -15,6 +15,30 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _passwordController = TextEditingController();
   bool _isLogin = true;
   bool _isLoading = false;
+  bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final storage = ref.read(secureStorageProvider);
+    final rememberMe = await storage.get('remember_me');
+
+    if (rememberMe == 'true') {
+      final email = await storage.get('email');
+      final password = await storage.get('password');
+      if (mounted) {
+        setState(() {
+          _rememberMe = true;
+          if (email != null) _emailController.text = email;
+          if (password != null) _passwordController.text = password;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -32,6 +56,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
     try {
       final authRepo = ref.read(authRepositoryProvider);
+      final storage = ref.read(secureStorageProvider);
+
       if (_isLogin) {
         await authRepo.signInWithEmailAndPassword(
           _emailController.text.trim(),
@@ -43,6 +69,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           _passwordController.text.trim(),
         );
       }
+
+      // Handle Remember Me
+      if (_rememberMe) {
+        await storage.put('remember_me', 'true');
+        await storage.put('email', _emailController.text.trim());
+        await storage.put('password', _passwordController.text.trim());
+      } else {
+        await storage.delete('remember_me');
+        await storage.delete('email');
+        await storage.delete('password');
+      }
+
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
@@ -111,7 +149,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !value.contains('@')) {
                       return 'Please enter a valid email.';
                     }
                     return null;
@@ -128,6 +168,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     }
                     return null;
                   },
+                ),
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  value: _rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      _rememberMe = value ?? false;
+                    });
+                  },
+                  title: const Text('Remember me'),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
                 ),
                 const SizedBox(height: 24),
                 if (_isLoading)

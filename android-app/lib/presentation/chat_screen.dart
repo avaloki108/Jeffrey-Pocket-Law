@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../domain/models/chat_message.dart';
-import '../domain/models/legal_source.dart';
+import 'chat_state_notifier.dart';
 import 'providers.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -16,15 +17,23 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final List<ChatMessage> _messages = [];
-  bool _isLoading = false;
-
-  String? _sessionId;
 
   @override
   void initState() {
     super.initState();
-    _sessionId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Check for pending prompt from other screens (e.g. PromptsScreen)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final pendingPrompt = ref.read(promptSelectedProvider);
+      if (pendingPrompt != null && pendingPrompt.isNotEmpty) {
+        _messageController.text = pendingPrompt;
+        ref.read(promptSelectedProvider.notifier).clearPrompt();
+        _sendMessage(pendingPrompt);
+      } else {
+        // Scroll to bottom if there are existing messages
+        _scrollToBottom();
+      }
+    });
   }
 
   @override
@@ -36,61 +45,81 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      // Small delay to ensure list is rendered
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut);
+        }
+      });
     }
   }
 
   Future<void> _sendMessage(String text) async {
-    if (text.trim().isEmpty || _isLoading) return;
+    final chatState = ref.read(chatProvider);
+    if (text.trim().isEmpty || chatState.isLoading) return;
 
-    setState(() {
-      _messages.add(
-          ChatMessage(content: text, isUser: true, timestamp: DateTime.now()));
-      _isLoading = true;
-      _messageController.clear();
-    });
+    _messageController.clear();
+
+    // Use the provider to send message
+    final selectedStateAbbr = ref.read(selectedStateProvider);
+    await ref.read(chatProvider.notifier).sendMessage(text, selectedStateAbbr);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  }
 
-    try {
-      final chatUseCase = ref.read(chatUseCaseProvider);
-      final selectedStateAbbr = ref.read(selectedStateProvider);
+  void _clearChat() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear Conversation?'),
+        content: const Text(
+            'This will remove all messages from the current session.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(chatProvider.notifier).clearChat();
+              Navigator.pop(context);
+            },
+            child: const Text('Clear', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
-      final response = await chatUseCase.sendMessage(text, selectedStateAbbr,
-          sessionId: _sessionId);
-
-      setState(() {
-        _messages.add(ChatMessage(
-          content: response['content'] as String,
-          isUser: false,
-          timestamp: DateTime.now(),
-          sources: (response['sources'] as List?)
-              ?.map((s) => LegalSource.fromJson(s as Map<String, dynamic>))
-              .toList(),
-          confidence: response['confidence'] as double?,
-        ));
-        _isLoading = false;
-      });
-
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
-      // Track successful chat for review prompt (after 3 successful chats)
-      final viralService = ref.read(viralGrowthServiceProvider);
-      viralService.requestReview();
-    } catch (e) {
-      setState(() {
-        _messages.add(ChatMessage(
-          content:
-              'Error: ${e.toString()}\n\nCheck API credentials or rephrase.',
-          isUser: false,
-          timestamp: DateTime.now(),
-        ));
-        _isLoading = false;
-      });
-
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  void _saveChat() {
+    final chatState = ref.read(chatProvider);
+    if (chatState.messages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No conversation to save.')),
+      );
+      return;
     }
+
+    final buffer = StringBuffer();
+    buffer.writeln('Pocket Lawyer Conversation Log');
+    buffer.writeln('Date: ${DateTime.now().toString()}\n');
+
+    for (final msg in chatState.messages) {
+      buffer.writeln(
+          msg.isUser ? 'You: ${msg.content}' : 'Pocket Lawyer: ${msg.content}');
+      if (!msg.isUser && msg.sources != null && msg.sources!.isNotEmpty) {
+        buffer.writeln('Sources:');
+        for (final source in msg.sources!) {
+          buffer.writeln('- ${source.citation}');
+        }
+      }
+      buffer.writeln('-' * 20);
+    }
+
+    Share.share(buffer.toString(), subject: 'Pocket Lawyer Conversation');
   }
 
   @override
@@ -98,6 +127,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final selectedStateAbbr = ref.watch(selectedStateProvider);
     final selectedStateName = abbrToStateName[selectedStateAbbr] ?? 'Colorado';
     final theme = Theme.of(context);
+
+    // Watch the chat state
+    final chatState = ref.watch(chatProvider);
+    final messages = chatState.messages;
+    final isLoading = chatState.isLoading;
 
     // Listen for selected prompts and auto-send them
     ref.listen<String?>(promptSelectedProvider, (previous, next) {
@@ -116,53 +150,79 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             Image.asset(
               'assets/images/logo.png',
-              height: 40,
+              height: 32,
             ),
             const SizedBox(width: 10),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Pocket Lawyer Pro', style: TextStyle(fontSize: 18)),
+                Text('Jeffrey - Pro', style: TextStyle(fontSize: 16)),
               ],
             ),
           ],
         ),
         backgroundColor: const Color(0xFF5D5CDE),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save_alt),
+            tooltip: 'Save Conversation',
+            onPressed: _saveChat,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Clear Chat',
+            onPressed: _clearChat,
+          ),
+        ],
       ),
       body: Column(
         children: [
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                  colors: [Colors.blue.shade50, Colors.purple.shade50]),
+                  colors: [Colors.blue.shade50, Colors.indigo.shade50]),
               border: Border(bottom: BorderSide(color: Colors.blue.shade200)),
             ),
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.blue.shade500, Colors.purple.shade600]),
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: Colors.blue.shade100),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2))
+                    ],
                   ),
                   child: const Center(
-                      child: Text('🧠', style: TextStyle(fontSize: 16))),
+                      child: Icon(Icons.account_balance,
+                          size: 20, color: Color(0xFF5D5CDE))),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Advanced Legal RAG System',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue.shade900,
-                              fontSize: 13)),
+                      Row(
+                        children: [
+                          _buildPulsingLiveIndicator(),
+                          const SizedBox(width: 8),
+                          Text('Direct Connection to Official Law Libraries',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue.shade900,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
                       Text(
-                          'Powered by Gemini & Groq with real-time legal database access',
+                          'Jeffrey is online & connected to real-time legal sources to guide you.',
                           style: TextStyle(
                               color: Colors.blue.shade800, fontSize: 11)),
                     ],
@@ -189,18 +249,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
           Expanded(
-            child: _messages.isEmpty
+            child: messages.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat_bubble_outline,
+                        Icon(Icons.gavel,
                             size: 64, color: Colors.grey.shade300),
                         const SizedBox(height: 16),
-                        Text('Ask me anything about $selectedStateName law',
+                        Text(
+                            'Ask Jeffrey anything about $selectedStateName law',
                             style: TextStyle(
                                 fontSize: 16, color: Colors.grey.shade600)),
                         const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Text(
+                              'I will search 8M+ court cases and 500K+ statutes to find your answer.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey.shade500)),
+                        ),
+                        const SizedBox(height: 24),
                         Text('Or browse prompts for common questions',
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey.shade500)),
@@ -210,12 +280,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 : ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length + (_isLoading ? 1 : 0),
+                    itemCount: messages.length + (isLoading ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (index == _messages.length && _isLoading) {
+                      if (index == messages.length && isLoading) {
                         return _buildTypingIndicator();
                       }
-                      return _buildMessageBubble(_messages[index], theme);
+                      return _buildMessageBubble(messages[index], theme);
                     },
                   ),
           ),
@@ -237,7 +307,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      hintText: 'Ask about $selectedStateName law...',
+                      hintText: 'Ask Jeffrey about $selectedStateName law...',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(24)),
                       contentPadding: const EdgeInsets.symmetric(
@@ -246,19 +316,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     maxLines: null,
                     textInputAction: TextInputAction.send,
                     onSubmitted: _sendMessage,
-                    enabled: !_isLoading,
+                    enabled: !isLoading,
                   ),
                 ),
                 const SizedBox(width: 8),
                 FloatingActionButton(
                   heroTag: "chatSendFab",
-                  onPressed: _isLoading
+                  onPressed: isLoading
                       ? null
                       : () => _sendMessage(_messageController.text),
                   backgroundColor:
-                      _isLoading ? Colors.grey : const Color(0xFF5D5CDE),
+                      isLoading ? Colors.grey : const Color(0xFF5D5CDE),
                   mini: true,
-                  child: _isLoading
+                  child: isLoading
                       ? const SizedBox(
                           width: 20,
                           height: 20,
@@ -273,6 +343,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildPulsingLiveIndicator() {
+    return TweenAnimationBuilder(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 1500),
+      builder: (context, double value, child) {
+        return Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.green.shade400,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(1.0 - value),
+                blurRadius: 4 + (value * 4),
+                spreadRadius: value * 3,
+              )
+            ],
+          ),
+        );
+      },
+      onEnd: () {},
     );
   }
 

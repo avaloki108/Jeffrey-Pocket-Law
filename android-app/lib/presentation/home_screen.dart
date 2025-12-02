@@ -1,4 +1,3 @@
-import 'package:android_app/dataconnect_generated/generated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,29 +20,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ChatScreen(),
     PromptsScreen(),
     SettingsScreen(),
-    // Placeholder for the fourth screen if you have one.
-    // For now, let's just use a simple centered text.
-    Center(child: Text("Quiz Screen")),
   ];
 
   void _onItemTapped(int index) => setState(() => _selectedIndex = index);
-
-  Future<void> _testCreateCase() async {
-    try {
-      print("⚖️ Attempting to talk to Jeffery...");
-
-      // Using the singleton instance from the generated code
-      await ExampleConnector.instance.createCourtCase(
-          userEmail: "tester@example.com", // Ensure this user exists (from your seed data)
-          title: "Speeding Ticket Test",
-          status: "Open"
-      ).execute();
-
-      print("✅ SUCCESS: Case created in database!");
-    } catch (e) {
-      print("❌ ERROR: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,39 +47,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.chat_bubble_outline), activeIcon: Icon(Icons.chat_bubble), label: 'Chat'),
-              BottomNavigationBarItem(icon: Icon(Icons.library_books_outlined), activeIcon: Icon(Icons.library_books), label: 'Prompts'),
-              BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Config'),
-              BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Quiz'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.chat_bubble_outline),
+                  activeIcon: Icon(Icons.chat_bubble),
+                  label: 'Chat'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.library_books_outlined),
+                  activeIcon: Icon(Icons.library_books),
+                  label: 'Prompts'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_outlined),
+                  activeIcon: Icon(Icons.settings),
+                  label: 'Config'),
             ],
           ),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white,
-              boxShadow: [BoxShadow(color: const Color.fromRGBO(0, 0, 0, 0.05), blurRadius: 4, offset: const Offset(0, -2))],
+              color:
+                  Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+                      Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    color: const Color.fromRGBO(0, 0, 0, 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, -2))
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                4, // Increased to 4 to match the number of items
-                    (index) => Container(
+                3, // Reduced to 3 to match the number of items
+                (index) => Container(
                   width: 8,
                   height: 8,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(color: _selectedIndex == index ? const Color(0xFF5D5CDE) : Colors.grey.shade300, shape: BoxShape.circle),
+                  decoration: BoxDecoration(
+                      color: _selectedIndex == index
+                          ? const Color(0xFF5D5CDE)
+                          : Colors.grey.shade300,
+                      shape: BoxShape.circle),
                 ),
               ),
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: "testDbFab",
-        onPressed: _testCreateCase,
-        label: const Text("Test DB"),
-        icon: const Icon(Icons.add),
-        backgroundColor: Colors.blue,
       ),
     );
   }
