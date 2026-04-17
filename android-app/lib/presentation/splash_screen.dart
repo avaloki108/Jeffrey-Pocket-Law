@@ -22,13 +22,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _checkBiometricAuth();
   }
 
-  /// Navigates to the home screen or auth screen after a delay.
+  /// Navigates to onboarding, home, or auth after a delay.
   Future<void> _navigateNext() async {
     if (!mounted || _navigated) return;
     _navigated = true;
-    // 500ms delay
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
+
+    final storage = ref.read(secureStorageProvider);
+    final onboardingComplete = await storage.get('onboarding_complete');
+    final savedState = await storage.get('selected_state');
+    final savedJurisdiction = await storage.get('selected_jurisdiction');
+    final savedCounty = await storage.get('selected_county');
+    final savedPlan = await storage.get('selected_plan');
+
+    if (savedState != null && savedState.isNotEmpty) {
+      ref.read(selectedStateProvider.notifier).state = savedState;
+    }
+    if (savedJurisdiction != null && savedJurisdiction.isNotEmpty) {
+      ref.read(selectedJurisdictionProvider.notifier).state = savedJurisdiction;
+    }
+    if (savedCounty != null) {
+      ref.read(selectedCountyProvider.notifier).state = savedCounty;
+    }
+    if (savedPlan != null && savedPlan.isNotEmpty) {
+      ref.read(selectedPlanProvider.notifier).state = savedPlan;
+    }
+
+    if (onboardingComplete != 'true') {
+      Navigator.of(context).pushReplacementNamed('/onboarding');
+      return;
+    }
 
     final authState = ref.read(authStateProvider);
     authState.when(
@@ -39,14 +63,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           Navigator.of(context).pushReplacementNamed('/auth');
         }
       },
-      loading: () {
-        // If loading, wait a bit and retry (or listen to changes)
-        // For simplicity, we'll just wait a bit more or default to auth
-        // Better approach: Watch in build, but here we are in async method.
-        // Let's just push /auth and let AuthScreen handle state or redirect?
-        // No, let's wait for stream.
-        Navigator.of(context).pushReplacementNamed('/auth');
-      },
+      loading: () => Navigator.of(context).pushReplacementNamed('/auth'),
       error: (_, __) => Navigator.of(context).pushReplacementNamed('/auth'),
     );
   }

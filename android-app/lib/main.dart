@@ -16,6 +16,7 @@ import 'firebase_options.dart';
 import 'presentation/auth_screen.dart';
 import 'presentation/chat_screen.dart';
 import 'presentation/home_screen.dart';
+import 'presentation/onboarding_screen.dart';
 import 'presentation/prompts_screen.dart';
 import 'presentation/settings_screen.dart';
 import 'presentation/splash_screen.dart';
@@ -88,6 +89,10 @@ class MyApp extends StatelessWidget {
                 builder: (context) => const SplashScreen());
           case '/auth':
             return MaterialPageRoute(builder: (context) => const AuthScreen());
+          case '/onboarding':
+            return MaterialPageRoute(
+              builder: (context) => const OnboardingScreen(),
+            );
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());
           case '/prompts':
