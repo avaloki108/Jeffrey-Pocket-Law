@@ -270,7 +270,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: theme.colorScheme.surface,
                   ),
                   maxLines: null,
                   textInputAction: TextInputAction.send,
@@ -553,12 +553,14 @@ class _QuickPromptChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ActionChip(
-      avatar: const Icon(Icons.auto_awesome, size: 16),
-      label: Text(label),
+      avatar:
+          Icon(Icons.auto_awesome, size: 16, color: theme.colorScheme.primary),
+      label: Text(label, style: TextStyle(color: theme.colorScheme.onSurface)),
       onPressed: onTap,
-      backgroundColor: const Color(0xFF5D5CDE).withOpacity(0.08),
-      side: BorderSide(color: const Color(0xFF5D5CDE).withOpacity(0.18)),
+      backgroundColor: theme.colorScheme.primary.withOpacity(0.08),
+      side: BorderSide(color: theme.colorScheme.primary.withOpacity(0.18)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     );
   }

@@ -173,12 +173,10 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEEF0FF), Color(0xFFF7F8FF)],
-              ),
+              color: Theme.of(context).cardTheme.color ??
+                  Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: const Color(0xFF5D5CDE).withOpacity(0.12)),
+              border: Border.all(color: Theme.of(context).dividerColor),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,12 +347,13 @@ class _PopularPromptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ActionChip(
-      label: Text(label),
-      avatar: const Icon(Icons.bolt, size: 16),
+      label: Text(label, style: TextStyle(color: theme.colorScheme.onSurface)),
+      avatar: Icon(Icons.bolt, size: 16, color: theme.colorScheme.primary),
       onPressed: onTap,
-      backgroundColor: Colors.white,
-      side: BorderSide(color: Colors.grey.shade300),
+      backgroundColor: theme.cardTheme.color ?? theme.colorScheme.surface,
+      side: BorderSide(color: theme.dividerColor),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     );
   }

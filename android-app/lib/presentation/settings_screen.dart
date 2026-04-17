@@ -28,8 +28,10 @@ class SettingsScreen extends ConsumerWidget {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEEF0FF), Color(0xFFF7F8FF)],
+              gradient: LinearGradient(
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? [const Color(0xFF1E1F2E), const Color(0xFF222338)]
+                    : [const Color(0xFFEEF0FF), const Color(0xFFF7F8FF)],
               ),
               borderRadius: BorderRadius.circular(16),
               border:
