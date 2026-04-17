@@ -14,6 +14,10 @@ class ChatUseCase {
     String jurisdiction = 'State',
     String county = '',
     String plan = 'Free',
+    String userName = '',
+    String lawyerName = 'Jeffrey',
+    String ageRange = '25-34',
+    List<String> useCases = const [],
   }) async {
     final response = await _ragRepository.performRAGQuery(
       query,
@@ -21,6 +25,10 @@ class ChatUseCase {
       jurisdiction: jurisdiction,
       county: county,
       plan: plan,
+      userName: userName,
+      lawyerName: lawyerName,
+      ageRange: ageRange,
+      useCases: useCases,
     );
 
     // 2. Persist if sessionId is provided

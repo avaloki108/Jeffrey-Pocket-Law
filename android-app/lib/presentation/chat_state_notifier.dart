@@ -47,6 +47,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
     String jurisdiction = 'State',
     String county = '',
     String plan = 'Free',
+    String userName = '',
+    String lawyerName = 'Jeffrey',
+    String ageRange = '25-34',
+    List<String> useCases = const [],
   }) async {
     if (text.trim().isEmpty || state.isLoading) return;
 
@@ -66,6 +70,10 @@ class ChatNotifier extends StateNotifier<ChatState> {
         jurisdiction: jurisdiction,
         county: county,
         plan: plan,
+        userName: userName,
+        lawyerName: lawyerName,
+        ageRange: ageRange,
+        useCases: useCases,
       );
 
       final botMsg = ChatMessage(

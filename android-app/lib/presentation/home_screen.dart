@@ -39,6 +39,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectedCounty = ref.watch(selectedCountyProvider);
     final selectedPlan = ref.watch(selectedPlanProvider);
 
+    final lawyerName = ref.watch(lawyerNameProvider);
+
     // Hide header on chat tab once there are messages
     final chatState = ref.watch(chatProvider);
     final hideHeader = _selectedIndex == 0 && chatState.messages.isNotEmpty;
@@ -64,9 +66,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 bottom: false,
                 child: Row(
                   children: [
-                    const Text(
-                      'Jeffrey',
-                      style: TextStyle(
+                    Text(
+                      lawyerName,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

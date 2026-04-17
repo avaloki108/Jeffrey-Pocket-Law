@@ -8,6 +8,10 @@ abstract class RagRepository {
     String jurisdiction = 'State',
     String county = '',
     String plan = 'Free',
+    String userName = '',
+    String lawyerName = 'Jeffrey',
+    String ageRange = '25-34',
+    List<String> useCases = const [],
   });
 }
 
@@ -30,6 +34,10 @@ class RagRepositoryImpl implements RagRepository {
     String jurisdiction = 'State',
     String county = '',
     String plan = 'Free',
+    String userName = '',
+    String lawyerName = 'Jeffrey',
+    String ageRange = '25-34',
+    List<String> useCases = const [],
   }) async {
     try {
       final scope = jurisdiction == 'County' && county.trim().isNotEmpty
@@ -38,9 +46,19 @@ class RagRepositoryImpl implements RagRepository {
               ? 'Federal law in the United States'
               : '$state state law';
 
+      final userContext = userName.isNotEmpty
+          ? 'The user\'s name is $userName. They are in the $ageRange age range.'
+          : '';
+      final focusAreas = useCases.isNotEmpty
+          ? 'Their main legal interests are: ${useCases.join(", ")}.'
+          : '';
+      final name = lawyerName.isNotEmpty ? lawyerName : 'Jeffrey';
+
       // Build the LLM prompt (structured sections)
       final rewrittenPrompt = '''
-You are Jeffrey, a friendly neighborhood pocket lawyer. Answer this question for a regular person.
+You are $name, a friendly neighborhood pocket lawyer. Answer this question for a regular person.
+$userContext
+$focusAreas
 
 User plan: $plan
 Jurisdiction scope: $scope
@@ -58,7 +76,7 @@ Requirements:
 - Clearly say whether the answer is county, state, or federal specific
 - If the law is uncertain or fact dependent, say that honestly
 - Cite specific statutes or case law naturally when available
-- End with your signature disclaimer: "I'm Jeffrey, your pocket lawyer — I help you understand the law in plain English. I'm not YOUR lawyer though, so for advice specific to your situation, talk to a licensed attorney in your area."
+- End with your signature disclaimer: "I'm $name, your pocket lawyer — I help you understand the law in plain English. I'm not YOUR lawyer though, so for advice specific to your situation, talk to a licensed attorney in your area."
 
 User question: $prompt
 ''';

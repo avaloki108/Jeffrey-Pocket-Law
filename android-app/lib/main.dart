@@ -17,6 +17,7 @@ import 'presentation/auth_screen.dart';
 import 'presentation/chat_screen.dart';
 import 'presentation/home_screen.dart';
 import 'presentation/onboarding_screen.dart';
+import 'presentation/personalize_screen.dart';
 import 'presentation/prompts_screen.dart';
 import 'presentation/settings_screen.dart';
 import 'presentation/splash_screen.dart';
@@ -92,6 +93,10 @@ class MyApp extends StatelessWidget {
           case '/onboarding':
             return MaterialPageRoute(
               builder: (context) => const OnboardingScreen(),
+            );
+          case '/personalize':
+            return MaterialPageRoute(
+              builder: (context) => const PersonalizeScreen(),
             );
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());

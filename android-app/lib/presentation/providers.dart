@@ -101,6 +101,12 @@ final selectedJurisdictionProvider = StateProvider<String>((ref) => 'State');
 final selectedCountyProvider = StateProvider<String>((ref) => '');
 final selectedPlanProvider = StateProvider<String>((ref) => 'Free');
 
+// Personalization providers
+final userNameProvider = StateProvider<String>((ref) => '');
+final lawyerNameProvider = StateProvider<String>((ref) => 'Jeffrey');
+final userAgeRangeProvider = StateProvider<String>((ref) => '25-34');
+final userUseCasesProvider = StateProvider<List<String>>((ref) => []);
+
 const stateNameToAbbr = {
   'Alabama': 'AL',
   'Alaska': 'AK',

@@ -48,7 +48,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     await storage.put('selected_plan', selectedPlan);
 
     if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed(goToAuth ? '/auth' : '/home');
+    Navigator.of(context)
+        .pushReplacementNamed(goToAuth ? '/auth' : '/personalize');
   }
 
   @override

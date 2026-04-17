@@ -68,12 +68,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final selectedJurisdiction = ref.read(selectedJurisdictionProvider);
     final selectedCounty = ref.read(selectedCountyProvider);
     final selectedPlan = ref.read(selectedPlanProvider);
+    final userName = ref.read(userNameProvider);
+    final lawyerName = ref.read(lawyerNameProvider);
+    final ageRange = ref.read(userAgeRangeProvider);
+    final useCases = ref.read(userUseCasesProvider);
     await ref.read(chatProvider.notifier).sendMessage(
           text,
           selectedStateAbbr,
           jurisdiction: selectedJurisdiction,
           county: selectedCounty,
           plan: selectedPlan,
+          userName: userName,
+          lawyerName: lawyerName,
+          ageRange: ageRange,
+          useCases: useCases,
         );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());

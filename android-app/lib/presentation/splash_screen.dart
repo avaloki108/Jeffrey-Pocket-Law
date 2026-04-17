@@ -50,13 +50,37 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       ref.read(selectedPlanProvider.notifier).state = savedPlan;
     }
 
+    // Load personalization
+    final savedUserName = await storage.get('user_name');
+    final savedLawyerName = await storage.get('lawyer_name');
+    final savedAgeRange = await storage.get('user_age_range');
+    final savedUseCases = await storage.get('user_use_cases');
+    final personalized = await storage.get('personalized');
+
+    if (savedUserName != null && savedUserName.isNotEmpty) {
+      ref.read(userNameProvider.notifier).state = savedUserName;
+    }
+    if (savedLawyerName != null && savedLawyerName.isNotEmpty) {
+      ref.read(lawyerNameProvider.notifier).state = savedLawyerName;
+    }
+    if (savedAgeRange != null && savedAgeRange.isNotEmpty) {
+      ref.read(userAgeRangeProvider.notifier).state = savedAgeRange;
+    }
+    if (savedUseCases != null && savedUseCases.isNotEmpty) {
+      ref.read(userUseCasesProvider.notifier).state = savedUseCases.split(',');
+    }
+
     if (onboardingComplete != 'true') {
       Navigator.of(context).pushReplacementNamed('/onboarding');
       return;
     }
 
     if (kDebugMode) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      if (personalized != 'true') {
+        Navigator.of(context).pushReplacementNamed('/personalize');
+      } else {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
       return;
     }
 
