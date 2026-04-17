@@ -143,7 +143,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   width: 100,
                   height: 100,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                const Text(
+                  'Plain-English legal help for everyday people.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Use guest mode to try the app now, then create an account later for saved history and premium features.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+                const SizedBox(height: 24),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
@@ -194,13 +206,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         ),
                         child: Text(_isLogin ? 'Sign In' : 'Sign Up'),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       OutlinedButton(
                         onPressed: _signInWithGoogle,
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 48),
                         ),
                         child: const Text('Sign in with Google'),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).pushReplacementNamed('/home');
+                        },
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text('Continue as Guest'),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Free plan includes ads. Upgrade later for more states, better source depth, saved history, and premium explainers.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade600),
                       ),
                       const SizedBox(height: 16),
                       TextButton(

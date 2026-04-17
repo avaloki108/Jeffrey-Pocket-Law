@@ -1,8 +1,10 @@
+import 'dart:io' show Platform;
 import 'dart:ui' as ui;
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,8 +38,10 @@ Future<void> main() async {
     return true;
   };
 
-  // Initialize Google Mobile Ads
-  MobileAds.instance.initialize();
+  // Initialize Google Mobile Ads only on mobile platforms
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    MobileAds.instance.initialize();
+  }
 
   try {
     await dotenv.load(fileName: '.env');
@@ -80,17 +84,21 @@ class MyApp extends StatelessWidget {
         }
         switch (settings.name) {
           case '/':
-            return MaterialPageRoute(builder: (context) => const SplashScreen());
+            return MaterialPageRoute(
+                builder: (context) => const SplashScreen());
           case '/auth':
             return MaterialPageRoute(builder: (context) => const AuthScreen());
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());
           case '/prompts':
-            return MaterialPageRoute(builder: (context) => const PromptsScreen());
+            return MaterialPageRoute(
+                builder: (context) => const PromptsScreen());
           case '/settings':
-            return MaterialPageRoute(builder: (context) => const SettingsScreen());
+            return MaterialPageRoute(
+                builder: (context) => const SettingsScreen());
           default:
-            return MaterialPageRoute(builder: (context) => const SplashScreen());
+            return MaterialPageRoute(
+                builder: (context) => const SplashScreen());
         }
       },
     );

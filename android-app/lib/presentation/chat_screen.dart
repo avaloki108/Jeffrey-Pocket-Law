@@ -126,6 +126,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final selectedStateAbbr = ref.watch(selectedStateProvider);
     final selectedStateName = abbrToStateName[selectedStateAbbr] ?? 'Colorado';
+    final selectedJurisdiction = ref.watch(selectedJurisdictionProvider);
+    final selectedCounty = ref.watch(selectedCountyProvider);
+    final selectedPlan = ref.watch(selectedPlanProvider);
     final theme = Theme.of(context);
 
     // Watch the chat state
@@ -222,9 +225,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                          'Jeffrey is online & connected to real-time legal sources to guide you.',
-                          style: TextStyle(
-                              color: Colors.blue.shade800, fontSize: 11)),
+                        selectedJurisdiction == 'County' &&
+                                selectedCounty.trim().isNotEmpty
+                            ? '$selectedPlan plan • $selectedCounty County, $selectedStateName • plain-English legal answers'
+                            : '$selectedPlan plan • $selectedJurisdiction law for $selectedStateName • plain-English legal answers',
+                        style: TextStyle(
+                          color: Colors.blue.shade800,
+                          fontSize: 11,
+                        ),
+                      ),
                     ],
                   ),
                 ),

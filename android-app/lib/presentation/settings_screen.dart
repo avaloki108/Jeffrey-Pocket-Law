@@ -12,6 +12,9 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedStateAbbr = ref.watch(selectedStateProvider);
     final selectedStateName = abbrToStateName[selectedStateAbbr] ?? 'Colorado';
+    final selectedJurisdiction = ref.watch(selectedJurisdictionProvider);
+    final selectedCounty = ref.watch(selectedCountyProvider);
+    final selectedPlan = ref.watch(selectedPlanProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,22 +43,61 @@ class SettingsScreen extends ConsumerWidget {
                   DropdownButtonFormField<String>(
                     initialValue: selectedStateName,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 12),
                     ),
-                    items: [
-                      'California',
-                      'Colorado',
-                      'New Mexico',
-                      'New York',
-                      'Texas',
-                    ].map((name) => DropdownMenuItem(value: name, child: Text(name))).toList(),
+                    items: stateNameToAbbr.keys
+                        .map((name) =>
+                            DropdownMenuItem(value: name, child: Text(name)))
+                        .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         final abbr = stateNameToAbbr[value] ?? 'CO';
                         ref.read(selectedStateProvider.notifier).state = abbr;
                       }
                     },
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Jurisdiction Focus',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    initialValue: selectedJurisdiction,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 12),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'County', child: Text('County')),
+                      DropdownMenuItem(value: 'State', child: Text('State')),
+                      DropdownMenuItem(
+                          value: 'Federal', child: Text('Federal')),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        ref.read(selectedJurisdictionProvider.notifier).state =
+                            value;
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    initialValue: selectedCounty,
+                    decoration: InputDecoration(
+                      labelText: 'County (optional)',
+                      hintText: 'Denver',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onChanged: (value) => ref
+                        .read(selectedCountyProvider.notifier)
+                        .state = value.trim(),
                   ),
                 ],
               ),
@@ -82,10 +124,14 @@ class SettingsScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Last Index Update', style: TextStyle(fontSize: 14)),
+                      const Text('Last Index Update',
+                          style: TextStyle(fontSize: 14)),
                       Text(
                         '2 hours ago',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey.shade700),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade700),
                       ),
                     ],
                   ),
@@ -100,38 +146,41 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Professional Plan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [Colors.green.shade50, Colors.blue.shade50]),
-                      border: Border.all(color: Colors.green.shade200),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [Colors.green.shade500, Colors.blue.shade600]),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.check, color: Colors.white, size: 18),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Enterprise RAG Active', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green.shade800)),
-                              Text('Unlimited queries • Real-time updates', style: TextStyle(fontSize: 12, color: Colors.green.shade700)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                  const Text('Plans & Access',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  _buildPlanOption(
+                    context,
+                    ref,
+                    title: 'Free',
+                    subtitle:
+                        'Ad-supported, core legal translator, basic chat history',
+                    value: 'Free',
+                    selectedPlan: selectedPlan,
+                    accent: Colors.orange,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPlanOption(
+                    context,
+                    ref,
+                    title: 'Plus',
+                    subtitle:
+                        'No ads, deeper source summaries, saved conversations, priority responses',
+                    value: 'Plus',
+                    selectedPlan: selectedPlan,
+                    accent: Colors.blue,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPlanOption(
+                    context,
+                    ref,
+                    title: 'Pro',
+                    subtitle:
+                        'Multi-jurisdiction workflows, county + federal drill-down, premium explainers',
+                    value: 'Pro',
+                    selectedPlan: selectedPlan,
+                    accent: Colors.green,
                   ),
                 ],
               ),
@@ -146,7 +195,9 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Security & Privacy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Security & Privacy',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   _buildSecurityRow('End-to-end encryption (AES-256)'),
                   const SizedBox(height: 10),
@@ -164,6 +215,53 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildPlanOption(
+    BuildContext context,
+    WidgetRef ref, {
+    required String title,
+    required String subtitle,
+    required String value,
+    required String selectedPlan,
+    required Color accent,
+  }) {
+    final selected = selectedPlan == value;
+    return InkWell(
+      onTap: () => ref.read(selectedPlanProvider.notifier).state = value,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: selected ? accent.withOpacity(0.08) : Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+              color: selected ? accent : Colors.grey.shade300,
+              width: selected ? 2 : 1),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Icon(selected ? Icons.check_circle : Icons.circle_outlined,
+                color: accent),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(subtitle,
+                      style:
+                          TextStyle(fontSize: 12, color: Colors.grey.shade700)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatusRow(String label, bool isConnected, {String? detail}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,10 +272,14 @@ class SettingsScreen extends ConsumerWidget {
             Container(
               width: 8,
               height: 8,
-              decoration: BoxDecoration(color: isConnected ? Colors.green : Colors.red, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                  color: isConnected ? Colors.green : Colors.red,
+                  shape: BoxShape.circle),
             ),
             const SizedBox(width: 8),
-            Text(detail ?? (isConnected ? 'Connected' : 'Disconnected'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            Text(detail ?? (isConnected ? 'Connected' : 'Disconnected'),
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
           ],
         ),
       ],
@@ -187,7 +289,11 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildSecurityRow(String text) {
     return Row(
       children: [
-        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
+        Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+                color: Colors.green, shape: BoxShape.circle)),
         const SizedBox(width: 12),
         Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
       ],
@@ -257,9 +363,13 @@ class _ViralGrowthCardState extends State<_ViralGrowthCard> {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [const Color(0xFF5D5CDE).withAlpha(25), Colors.purple.shade50],
+                  colors: [
+                    const Color(0xFF5D5CDE).withAlpha(25),
+                    Colors.purple.shade50
+                  ],
                 ),
-                border: Border.all(color: const Color(0xFF5D5CDE).withAlpha(77)),
+                border:
+                    Border.all(color: const Color(0xFF5D5CDE).withAlpha(77)),
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: const EdgeInsets.all(12),
@@ -312,12 +422,14 @@ class _ViralGrowthCardState extends State<_ViralGrowthCard> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.card_giftcard, color: Colors.green.shade700, size: 20),
+                  Icon(Icons.card_giftcard,
+                      color: Colors.green.shade700, size: 20),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
                       'Earn 7 days Pro for each friend who joins!',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
