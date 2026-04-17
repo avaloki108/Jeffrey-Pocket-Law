@@ -7,10 +7,21 @@ class ChatUseCase {
 
   ChatUseCase(this._ragRepository, this._connector);
 
-  Future<Map<String, dynamic>> sendMessage(String query, String state,
-      {String? sessionId}) async {
-    // 1. Get RAG response
-    final response = await _ragRepository.performRAGQuery(query, state);
+  Future<Map<String, dynamic>> sendMessage(
+    String query,
+    String state, {
+    String? sessionId,
+    String jurisdiction = 'State',
+    String county = '',
+    String plan = 'Free',
+  }) async {
+    final response = await _ragRepository.performRAGQuery(
+      query,
+      state,
+      jurisdiction: jurisdiction,
+      county: county,
+      plan: plan,
+    );
 
     // 2. Persist if sessionId is provided
     if (sessionId != null) {

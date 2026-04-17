@@ -41,7 +41,13 @@ class ChatNotifier extends StateNotifier<ChatState> {
     }
   }
 
-  Future<void> sendMessage(String text, String stateAbbr) async {
+  Future<void> sendMessage(
+    String text,
+    String stateAbbr, {
+    String jurisdiction = 'State',
+    String county = '',
+    String plan = 'Free',
+  }) async {
     if (text.trim().isEmpty || state.isLoading) return;
 
     // Add user message
@@ -53,8 +59,14 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
 
     try {
-      final response = await _chatUseCase.sendMessage(text, stateAbbr,
-          sessionId: state.sessionId);
+      final response = await _chatUseCase.sendMessage(
+        text,
+        stateAbbr,
+        sessionId: state.sessionId,
+        jurisdiction: jurisdiction,
+        county: county,
+        plan: plan,
+      );
 
       final botMsg = ChatMessage(
         content: response['content'] as String,

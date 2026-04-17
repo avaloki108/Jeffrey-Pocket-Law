@@ -63,9 +63,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     _messageController.clear();
 
-    // Use the provider to send message
     final selectedStateAbbr = ref.read(selectedStateProvider);
-    await ref.read(chatProvider.notifier).sendMessage(text, selectedStateAbbr);
+    final selectedJurisdiction = ref.read(selectedJurisdictionProvider);
+    final selectedCounty = ref.read(selectedCountyProvider);
+    final selectedPlan = ref.read(selectedPlanProvider);
+    await ref.read(chatProvider.notifier).sendMessage(
+          text,
+          selectedStateAbbr,
+          jurisdiction: selectedJurisdiction,
+          county: selectedCounty,
+          plan: selectedPlan,
+        );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
