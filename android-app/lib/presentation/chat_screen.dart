@@ -282,10 +282,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 32),
                           child: Text(
-                              'I will search 8M+ court cases and 500K+ statutes to find your answer.',
+                              'I translate legal jargon into normal language and pull from real legal sources for your selected jurisdiction.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 13, color: Colors.grey.shade500)),
+                        ),
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            _QuickPromptChip(
+                              label: 'Can my landlord keep my deposit?',
+                              onTap: () => _sendMessage(
+                                  'Can my landlord keep my security deposit in $selectedStateName? Explain it in plain English.'),
+                            ),
+                            _QuickPromptChip(
+                              label: 'What happens if I miss court?',
+                              onTap: () => _sendMessage(
+                                  'What happens if I miss a court date in $selectedStateName? Keep it simple and practical.'),
+                            ),
+                            _QuickPromptChip(
+                              label: 'Can my boss fire me for this?',
+                              onTap: () => _sendMessage(
+                                  'Can my employer fire me for reporting a problem in $selectedStateName? Explain my options simply.'),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 24),
                         Text('Or browse prompts for common questions',
@@ -528,6 +551,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _QuickPromptChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickPromptChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      avatar: const Icon(Icons.auto_awesome, size: 16),
+      label: Text(label),
+      onPressed: onTap,
+      backgroundColor: const Color(0xFF5D5CDE).withOpacity(0.08),
+      side: BorderSide(color: const Color(0xFF5D5CDE).withOpacity(0.18)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
     );
   }
 }
