@@ -471,16 +471,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (!message.isUser)
+              Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(
+                    theme.brightness == Brightness.dark ? 0.08 : 0.55,
+                  ),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Jeffrey\'s answer',
+                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                ),
+              ),
             if (message.isUser)
               Text(message.content, style: const TextStyle(color: Colors.white))
             else
               MarkdownBody(
                 data: message.content,
                 styleSheet: MarkdownStyleSheet(
-                    p: TextStyle(
-                        color: theme.brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87)),
+                  p: TextStyle(
+                    color: theme.brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
+                    height: 1.45,
+                  ),
+                ),
               ),
             if (message.sources != null && message.sources!.isNotEmpty) ...[
               const SizedBox(height: 12),
@@ -499,15 +518,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 runSpacing: 6,
                 children: message.sources!
                     .map((source) => Container(
+                          constraints: const BoxConstraints(maxWidth: 260),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                              horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
-                              color: Colors.indigo.shade100,
-                              border: Border.all(color: Colors.indigo.shade300),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Text(source.citation,
-                              style: TextStyle(
-                                  fontSize: 10, color: Colors.indigo.shade900)),
+                            color: theme.brightness == Brightness.dark
+                                ? Colors.grey.shade700
+                                : Colors.white,
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.menu_book, size: 14),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  source.citation,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: theme.brightness == Brightness.dark
+                                        ? Colors.white70
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ))
                     .toList(),
               ),
@@ -523,13 +561,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           color: theme.brightness == Brightness.dark
                               ? Colors.white70
                               : Colors.black54)),
-                  Text('${(message.confidence! * 100).round()}%',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: theme.brightness == Brightness.dark
-                              ? Colors.white70
-                              : Colors.black54)),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (message.confidence! > 0.8
+                              ? Colors.green
+                              : (message.confidence! > 0.6
+                                  ? Colors.orange
+                                  : Colors.red))
+                          .withOpacity(0.14),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text('${(message.confidence! * 100).round()}%',
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: message.confidence! > 0.8
+                                ? Colors.green.shade800
+                                : (message.confidence! > 0.6
+                                    ? Colors.orange.shade800
+                                    : Colors.red.shade800))),
+                  ),
                 ],
               ),
               const SizedBox(height: 4),

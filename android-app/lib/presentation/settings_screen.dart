@@ -24,6 +24,40 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFEEF0FF), Color(0xFFF7F8FF)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border:
+                  Border.all(color: const Color(0xFF5D5CDE).withOpacity(0.12)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Your current setup',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  selectedJurisdiction == 'County' &&
+                          selectedCounty.trim().isNotEmpty
+                      ? '$selectedPlan plan • $selectedCounty County, $selectedStateName'
+                      : '$selectedPlan plan • $selectedJurisdiction • $selectedStateName',
+                  style: TextStyle(color: Colors.grey.shade800),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Jeffrey will use this scope to explain legal issues in plain English before you add full auth and billing later.',
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+              ],
+            ),
+          ),
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
