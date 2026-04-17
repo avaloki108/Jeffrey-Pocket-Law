@@ -174,139 +174,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              height: 32,
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Jeffrey • $selectedPlan',
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
-          ],
-        ),
-        backgroundColor: const Color(0xFF5D5CDE),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save_alt),
-            tooltip: 'Save Conversation',
-            onPressed: _saveChat,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: 'Clear Chat',
-            onPressed: _clearChat,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [Colors.blue.shade50, Colors.indigo.shade50]),
-              border: Border(bottom: BorderSide(color: Colors.blue.shade200)),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.blue.shade100),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2))
-                    ],
-                  ),
-                  child: const Center(
-                      child: Icon(Icons.account_balance,
-                          size: 20, color: Color(0xFF5D5CDE))),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _buildPulsingLiveIndicator(),
-                          const SizedBox(width: 8),
-                          Text('Direct Connection to Official Law Libraries',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue.shade900,
-                                  fontSize: 13)),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        selectedJurisdiction == 'County' &&
-                                selectedCounty.trim().isNotEmpty
-                            ? '$selectedPlan plan • $selectedCounty County, $selectedStateName • plain-English legal answers'
-                            : '$selectedPlan plan • $selectedJurisdiction law for $selectedStateName • plain-English legal answers',
-                        style: TextStyle(
-                          color: Colors.blue.shade800,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            color: Colors.yellow.shade50,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              children: [
-                const Text('⚠️', style: TextStyle(fontSize: 14)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Important: This provides legal information with source citations, not legal advice. All responses are encrypted end-to-end.',
-                    style:
-                        TextStyle(fontSize: 11, color: Colors.yellow.shade900),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: messages.isEmpty
-                ? Center(
+    return Column(
+      children: [
+        Expanded(
+          child: messages.isEmpty
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 32),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.gavel,
-                            size: 64, color: Colors.grey.shade300),
-                        const SizedBox(height: 16),
+                            size: 56, color: Colors.grey.shade300),
+                        const SizedBox(height: 14),
                         Text(
                             'Ask Jeffrey anything about $selectedStateName law',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 16, color: Colors.grey.shade600)),
                         const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                              'I translate legal jargon into normal language and pull from real legal sources for your selected jurisdiction.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 13, color: Colors.grey.shade500)),
-                        ),
+                        Text(
+                            'Plain-English answers pulled from real legal sources.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 13, color: Colors.grey.shade500)),
                         const SizedBox(height: 20),
                         Wrap(
                           spacing: 8,
@@ -330,79 +222,85 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        Text('Or browse prompts for common questions',
+                        const SizedBox(height: 16),
+                        Text('Not legal advice • Info with source citations',
                             style: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade500)),
+                                fontSize: 11, color: Colors.grey.shade400)),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: messages.length + (isLoading ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == messages.length && isLoading) {
-                        return _buildTypingIndicator();
-                      }
-                      return _buildMessageBubble(messages[index], theme);
-                    },
                   ),
+                )
+              : ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length + (isLoading ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == messages.length && isLoading) {
+                      return _buildTypingIndicator();
+                    }
+                    return _buildMessageBubble(messages[index], theme);
+                  },
+                ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            border: Border(top: BorderSide(color: Colors.grey.shade300)),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: theme.scaffoldBackgroundColor,
-              border: Border(top: BorderSide(color: Colors.grey.shade300)),
-              boxShadow: [
-                BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, -2))
-              ],
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Ask Jeffrey about $selectedStateName law...',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24)),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                    ),
-                    maxLines: null,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: _sendMessage,
-                    enabled: !isLoading,
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+          child: Row(
+            children: [
+              if (messages.isNotEmpty)
+                IconButton(
+                  icon: Icon(Icons.delete_outline,
+                      size: 20, color: Colors.grey.shade500),
+                  onPressed: _clearChat,
+                  tooltip: 'Clear chat',
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                ),
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  decoration: InputDecoration(
+                    hintText: 'Ask about $selectedStateName law...',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24)),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
+                  maxLines: null,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: _sendMessage,
+                  enabled: !isLoading,
                 ),
-                const SizedBox(width: 8),
-                FloatingActionButton(
-                  heroTag: "chatSendFab",
-                  onPressed: isLoading
-                      ? null
-                      : () => _sendMessage(_messageController.text),
-                  backgroundColor:
-                      isLoading ? Colors.grey : const Color(0xFF5D5CDE),
-                  mini: true,
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white)))
-                      : const Icon(Icons.send, size: 20),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              FloatingActionButton(
+                heroTag: 'chatSendFab',
+                onPressed: isLoading
+                    ? null
+                    : () => _sendMessage(_messageController.text),
+                backgroundColor:
+                    isLoading ? Colors.grey : const Color(0xFF5D5CDE),
+                mini: true,
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white)))
+                    : const Icon(Icons.send, size: 20),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

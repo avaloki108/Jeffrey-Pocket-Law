@@ -51,134 +51,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             child: SafeArea(
               bottom: false,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Jeffrey',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    selectedJurisdiction == 'County' &&
-                            selectedCounty.isNotEmpty
-                        ? '$selectedPlan • $selectedCounty County, $selectedStateName'
-                        : '$selectedPlan • $selectedJurisdiction • $selectedStateName',
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _InfoChip(
-                        icon: Icons.translate,
-                        label: 'Plain-English legal answers',
-                      ),
-                      _InfoChip(
-                        icon: Icons.account_balance,
-                        label: 'County / state / federal scope',
-                      ),
-                      _InfoChip(
-                        icon: Icons.folder_open,
-                        label: selectedPlan == 'Free'
-                            ? 'Ad-supported access'
-                            : '$selectedPlan benefits active',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (_selectedIndex == 0)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Row(
                 children: [
                   Expanded(
-                    child: _QuickActionCard(
-                      icon: Icons.chat_bubble_outline,
-                      title: 'Ask now',
-                      subtitle: 'Start a plain-English legal question',
-                      onTap: () => setState(() => _selectedIndex = 0),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _QuickActionCard(
-                      icon: Icons.library_books_outlined,
-                      title: 'Popular prompts',
-                      subtitle: 'Tap common real-world questions',
-                      onTap: () => setState(() => _selectedIndex = 1),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Jeffrey',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          selectedJurisdiction == 'County' &&
+                                  selectedCounty.isNotEmpty
+                              ? '$selectedPlan • $selectedCounty County, $selectedStateName'
+                              : '$selectedPlan • $selectedJurisdiction • $selectedStateName',
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 13),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
+          ),
           Expanded(child: _screens[_selectedIndex]),
         ],
       ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
-            selectedItemColor: const Color(0xFF5D5CDE),
-            unselectedItemColor: Colors.grey,
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.chat_bubble_outline),
-                  activeIcon: Icon(Icons.chat_bubble),
-                  label: 'Chat'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.library_books_outlined),
-                  activeIcon: Icon(Icons.library_books),
-                  label: 'Prompts'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings_outlined),
-                  activeIcon: Icon(Icons.settings),
-                  label: 'Config'),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color:
-                  Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
-                      Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: const Color.fromRGBO(0, 0, 0, 0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, -2))
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                3, // Reduced to 3 to match the number of items
-                (index) => Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                      color: _selectedIndex == index
-                          ? const Color(0xFF5D5CDE)
-                          : Colors.grey.shade300,
-                      shape: BoxShape.circle),
-                ),
-              ),
-            ),
-          ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        selectedItemColor: const Color(0xFF5D5CDE),
+        unselectedItemColor: Colors.grey,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_outline),
+              activeIcon: Icon(Icons.chat_bubble),
+              label: 'Chat'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.library_books_outlined),
+              activeIcon: Icon(Icons.library_books),
+              label: 'Prompts'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings),
+              label: 'Config'),
         ],
       ),
     );
