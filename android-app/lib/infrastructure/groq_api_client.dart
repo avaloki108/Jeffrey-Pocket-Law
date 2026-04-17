@@ -18,7 +18,7 @@ class GroqApiClient {
     required String prompt,
     String model = 'gpt-oss:20b', // Default model as requested
     double temperature = 0.3,
-    int maxTokens = 1000,
+    int maxTokens = 2048,
   }) async {
     final apiKey = (dotenv.env['GROQ_API_KEY'] ??
             const String.fromEnvironment('GROQ_API_KEY'))
