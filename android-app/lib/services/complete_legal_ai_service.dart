@@ -387,6 +387,13 @@ class CompleteLegalAIService {
         ) ??
         'Unable to generate analysis. Please try again.';
 
+    // Log failure details in debug
+    if (kDebugMode && aiResponse.contains('Unable to generate')) {
+      print('AI generation failed — both Groq and Gemini returned null.');
+      print(
+          'Groq key present: ${dotenv.env["GROQ_API_KEY"]?.isNotEmpty ?? false}');
+    }
+
     return {
       'ai_analysis': aiResponse,
       'legal_sources': combinedContext.toString(),

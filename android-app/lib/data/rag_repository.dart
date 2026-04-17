@@ -75,19 +75,21 @@ User question: $prompt
         'sources': (result['citations'] as List?)
                 ?.map((c) => {
                       'citation': c,
-                      'url':
-                          '', // URL logic could be enhanced if returned from service
+                      'url': '',
                       'type': 'legal_source',
                     })
                 .toList() ??
             [],
-        'confidence': 0.85,
+        'confidence':
+            (result['ai_analysis'] as String).contains('Unable to generate')
+                ? 0.0
+                : 0.85,
       };
     } catch (e) {
       // Ultimate fallback
       return {
         'content':
-            'I apologize, but I encountered an error while researching your legal question. Please consult with a qualified attorney for personalized legal advice. Error: $e',
+            'Jeffrey couldn\'t connect to the legal research services right now. This usually means the AI backend (Groq or Gemini) is temporarily unavailable. Try again in a moment.\n\nError: $e',
         'sources': [],
         'confidence': 0.0,
       };
