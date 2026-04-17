@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'chat_screen.dart';
+import 'chat_state_notifier.dart';
 import 'prompts_screen.dart';
 import 'providers.dart';
 import 'settings_screen.dart';
@@ -38,49 +39,67 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectedCounty = ref.watch(selectedCountyProvider);
     final selectedPlan = ref.watch(selectedPlanProvider);
 
+    // Hide header on chat tab once there are messages
+    final chatState = ref.watch(chatProvider);
+    final hideHeader = _selectedIndex == 0 && chatState.messages.isNotEmpty;
+
+    final scopeLabel = selectedJurisdiction == 'County' &&
+            selectedCounty.isNotEmpty
+        ? '$selectedPlan \u2022 $selectedCounty County, $selectedStateName'
+        : '$selectedPlan \u2022 $selectedJurisdiction \u2022 $selectedStateName';
+
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF5D5CDE), Color(0xFF7878F2)],
+          if (!hideHeader)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF5D5CDE), Color(0xFF7878F2)],
+                ),
               ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Jeffrey',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          selectedJurisdiction == 'County' &&
-                                  selectedCounty.isNotEmpty
-                              ? '$selectedPlan • $selectedCounty County, $selectedStateName'
-                              : '$selectedPlan • $selectedJurisdiction • $selectedStateName',
-                          style: const TextStyle(
-                              color: Colors.white70, fontSize: 13),
-                        ),
-                      ],
+              child: SafeArea(
+                bottom: false,
+                child: Row(
+                  children: [
+                    const Text(
+                      'Jeffrey',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        scopeLabel,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            // SafeArea top inset even when header hidden
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF5D5CDE), Color(0xFF7878F2)],
+                ),
+              ),
+              child: const SafeArea(
+                bottom: false,
+                child: SizedBox.shrink(),
               ),
             ),
-          ),
           Expanded(child: _screens[_selectedIndex]),
         ],
       ),
@@ -105,80 +124,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               icon: Icon(Icons.settings_outlined),
               activeIcon: Icon(Icons.settings),
               label: 'Config'),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickActionCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _QuickActionCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Ink(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: theme.cardTheme.color ?? theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.dividerColor),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: theme.colorScheme.primary),
-            const SizedBox(height: 10),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _InfoChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withOpacity(0.16)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: Colors.white),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
         ],
       ),
     );

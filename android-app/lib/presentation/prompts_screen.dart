@@ -136,36 +136,6 @@ class _PromptsScreenState extends ConsumerState<PromptsScreen> {
     final stateName = abbrToStateName[stateAbbr] ?? 'California';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expert Legal Prompts'),
-        backgroundColor: const Color(0xFF5D5CDE),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: const Color.fromRGBO(255, 255, 255, 0.1),
-            child: Row(
-              children: [
-                const Icon(Icons.location_on, color: Colors.white70, size: 16),
-                const SizedBox(width: 6),
-                Text(
-                  'Selected State: $stateName',
-                  style: const TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-                const Spacer(),
-                Text(
-                  'Tap Config to change',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 11,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

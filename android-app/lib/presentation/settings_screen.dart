@@ -17,23 +17,19 @@ class SettingsScreen extends ConsumerWidget {
     final selectedPlan = ref.watch(selectedPlanProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('System Configuration'),
-        backgroundColor: const Color(0xFF5D5CDE),
-      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
         children: [
           Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: Theme.of(context).brightness == Brightness.dark
                     ? [const Color(0xFF1E1F2E), const Color(0xFF222338)]
                     : [const Color(0xFFEEF0FF), const Color(0xFFF7F8FF)],
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               border:
                   Border.all(color: const Color(0xFF5D5CDE).withOpacity(0.12)),
             ),
@@ -42,20 +38,26 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 const Text(
                   'Your current setup',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   selectedJurisdiction == 'County' &&
                           selectedCounty.trim().isNotEmpty
                       ? '$selectedPlan plan • $selectedCounty County, $selectedStateName'
                       : '$selectedPlan plan • $selectedJurisdiction • $selectedStateName',
-                  style: TextStyle(color: Colors.grey.shade800),
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: 13,
+                  ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   'Jeffrey will use this scope to explain legal issues in plain English before you add full auth and billing later.',
-                  style: TextStyle(color: Colors.grey.shade700),
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
