@@ -43,11 +43,19 @@ Explain this legal issue in plain everyday language for a regular person.
 User plan: $plan
 Jurisdiction scope: $scope
 
+Format the response in markdown with these exact sections:
+## Short answer
+## What this means
+## What to do next
+## Scope
+## Sources
+
 Requirements:
-- Lead with a short direct answer
-- Then explain what it means in plain English
-- Call out whether this is county, state, or federal specific
-- Mention practical next steps
+- Keep the short answer to 2 to 4 sentences
+- Use bullets where helpful
+- Be practical and calm, not academic
+- Clearly say whether the answer is county, state, or federal specific
+- If the law is uncertain or fact dependent, say that plainly
 - Include source-based citations when available
 - Do not pretend this is legal advice
 

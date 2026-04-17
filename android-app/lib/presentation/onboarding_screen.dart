@@ -78,6 +78,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 'Set your location and plan once, then start asking questions right away.',
                 style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
               ),
+              const SizedBox(height: 20),
+              LinearProgressIndicator(
+                value: 1,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(999),
+                backgroundColor: Colors.grey.shade200,
+                valueColor: const AlwaysStoppedAnimation(Color(0xFF5D5CDE)),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: const [
+                  _SetupBadge(
+                      icon: Icons.place_outlined, label: 'Pick your state'),
+                  _SetupBadge(
+                      icon: Icons.balance_outlined,
+                      label: 'Choose legal scope'),
+                  _SetupBadge(
+                      icon: Icons.workspace_premium_outlined,
+                      label: 'Select a plan'),
+                ],
+              ),
               const SizedBox(height: 24),
               _buildSectionTitle('Choose your state'),
               const SizedBox(height: 8),
@@ -178,6 +201,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
+              const SizedBox(height: 14),
+              Text(
+                'You can change all of this later in Settings.',
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -223,6 +251,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Text(
       title,
       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
+}
+
+class _SetupBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _SetupBadge({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF5D5CDE).withOpacity(0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: const Color(0xFF5D5CDE).withOpacity(0.14)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF5D5CDE)),
+          const SizedBox(width: 6),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 }
