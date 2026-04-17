@@ -32,7 +32,8 @@ class CompleteLegalAIService {
         if (kDebugMode) print('Attempting Groq generation...');
         final groqResponse = await _groqApiClient!.generate(
           prompt: promptText,
-          model: 'llama-3.3-70b-versatile',
+          model: 'groq/compound',
+          maxTokens: 4096,
         );
         return groqResponse;
       } catch (e) {
