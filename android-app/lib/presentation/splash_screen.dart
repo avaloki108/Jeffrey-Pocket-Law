@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,6 +52,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (onboardingComplete != 'true') {
       Navigator.of(context).pushReplacementNamed('/onboarding');
+      return;
+    }
+
+    if (kDebugMode) {
+      Navigator.of(context).pushReplacementNamed('/home');
       return;
     }
 

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'providers.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -20,7 +22,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSavedCredentials();
+    if (!kDebugMode) {
+      _loadSavedCredentials();
+    }
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -48,6 +52,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> _submit() async {
+    if (kDebugMode) {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -70,7 +81,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         );
       }
 
-      // Handle Remember Me
       if (_rememberMe) {
         await storage.put('remember_me', 'true');
         await storage.put('email', _emailController.text.trim());
@@ -100,6 +110,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    if (kDebugMode) {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -128,7 +145,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isLogin ? 'Sign In' : 'Sign Up'),
+        title: Text(
+            kDebugMode ? 'Debug Access' : (_isLogin ? 'Sign In' : 'Sign Up')),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -151,95 +169,105 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Use guest mode to try the app now, then create an account later for saved history and premium features.',
+                  kDebugMode
+                      ? 'Debug mode is active. Login, auth, and ads are intentionally off so we can finish the app flow first.'
+                      : 'Use guest mode to try the app now, then create an account later for saved history and premium features.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 24),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        !value.contains('@')) {
-                      return 'Please enter a valid email.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                  validator: (value) {
-                    if (value == null || value.length < 6) {
-                      return 'Password must be at least 6 characters long.';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                CheckboxListTile(
-                  value: _rememberMe,
-                  onChanged: (value) {
-                    setState(() {
-                      _rememberMe = value ?? false;
-                    });
-                  },
-                  title: const Text('Remember me'),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  contentPadding: EdgeInsets.zero,
-                ),
+                if (!kDebugMode) ...[
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null ||
+                          value.isEmpty ||
+                          !value.contains('@')) {
+                        return 'Please enter a valid email.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.length < 6) {
+                        return 'Password must be at least 6 characters long.';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  CheckboxListTile(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
+                    title: const Text('Remember me'),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ],
                 const SizedBox(height: 24),
                 if (_isLoading)
                   const CircularProgressIndicator()
                 else
                   Column(
                     children: [
-                      ElevatedButton(
-                        onPressed: _submit,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 48),
+                      if (!kDebugMode)
+                        ElevatedButton(
+                          onPressed: _submit,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          child: Text(_isLogin ? 'Sign In' : 'Sign Up'),
                         ),
-                        child: Text(_isLogin ? 'Sign In' : 'Sign Up'),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton(
-                        onPressed: _signInWithGoogle,
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 48),
+                      if (!kDebugMode) const SizedBox(height: 12),
+                      if (!kDebugMode)
+                        OutlinedButton(
+                          onPressed: _signInWithGoogle,
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 48),
+                          ),
+                          child: const Text('Sign in with Google'),
                         ),
-                        child: const Text('Sign in with Google'),
-                      ),
-                      const SizedBox(height: 12),
                       TextButton.icon(
                         onPressed: () {
                           Navigator.of(context).pushReplacementNamed('/home');
                         },
                         icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Continue as Guest'),
+                        label: Text(kDebugMode
+                            ? 'Continue in Debug Mode'
+                            : 'Continue as Guest'),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Free plan includes ads. Upgrade later for more states, better source depth, saved history, and premium explainers.',
+                        kDebugMode
+                            ? 'Auth and ads stay off in debug mode so we can perfect the app before wiring monetization and account flows.'
+                            : 'Free plan includes ads. Upgrade later for more states, better source depth, saved history, and premium explainers.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 12, color: Colors.grey.shade600),
                       ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isLogin = !_isLogin;
-                          });
-                        },
-                        child: Text(_isLogin
-                            ? 'Create an account'
-                            : 'I already have an account'),
-                      ),
+                      if (!kDebugMode) const SizedBox(height: 16),
+                      if (!kDebugMode)
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isLogin = !_isLogin;
+                            });
+                          },
+                          child: Text(_isLogin
+                              ? 'Create an account'
+                              : 'I already have an account'),
+                        ),
                     ],
                   ),
               ],

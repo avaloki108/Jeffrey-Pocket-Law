@@ -39,8 +39,8 @@ Future<void> main() async {
     return true;
   };
 
-  // Initialize Google Mobile Ads only on mobile platforms
-  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+  // Initialize Google Mobile Ads only outside debug mode on mobile platforms
+  if (!kDebugMode && !kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
     MobileAds.instance.initialize();
   }
 
