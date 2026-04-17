@@ -37,6 +37,8 @@ class RagRepositoryImpl implements RagRepository {
           : jurisdiction == 'Federal'
               ? 'Federal law in the United States'
               : '$state state law';
+
+      // Build the LLM prompt (structured sections)
       final rewrittenPrompt = '''
 Explain this legal issue in plain everyday language for a regular person.
 
@@ -63,7 +65,8 @@ User question: $prompt
 ''';
 
       final result = await _legalService.comprehensiveLegalQuery(
-        userQuery: rewrittenPrompt,
+        userQuery: prompt,
+        llmPrompt: rewrittenPrompt,
         jurisdiction: state.isNotEmpty ? state : null,
         searchCaseLaw: true,
         searchStatutes: true,

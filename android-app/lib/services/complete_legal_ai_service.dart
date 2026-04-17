@@ -300,6 +300,7 @@ class CompleteLegalAIService {
   /// Master legal query that combines all data sources
   Future<Map<String, dynamic>> comprehensiveLegalQuery({
     required String userQuery,
+    String? llmPrompt,
     bool searchCaseLaw = true,
     bool searchStatutes = true,
     bool searchCongress = true,
@@ -379,12 +380,17 @@ class CompleteLegalAIService {
     }
 
     // Generate AI analysis using Firebase AI Logic (Gemini) or Groq
-    final aiResponse = await generateWithCombinedAI(
-          _buildLegalPrompt(
-              userQuery: userQuery,
-              legalContext: combinedContext.toString(),
-              citations: citations),
-        ) ??
+    // Use the structured LLM prompt if available, otherwise build one from the user query
+    final aiPrompt = llmPrompt != null
+        ? _buildLegalPrompt(
+            userQuery: llmPrompt,
+            legalContext: combinedContext.toString(),
+            citations: citations)
+        : _buildLegalPrompt(
+            userQuery: userQuery,
+            legalContext: combinedContext.toString(),
+            citations: citations);
+    final aiResponse = await generateWithCombinedAI(aiPrompt) ??
         'Unable to generate analysis. Please try again.';
 
     // Log failure details in debug
