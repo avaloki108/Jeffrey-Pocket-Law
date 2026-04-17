@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -102,6 +103,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
+  void _copyMessage(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Answer copied.')),
+    );
+  }
+
+  void _setFollowUpDraft() {
+    _messageController.text =
+        'Can you explain that more simply and tell me what I should do first?';
+    _messageController.selection = TextSelection.fromPosition(
+      TextPosition(offset: _messageController.text.length),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Follow-up question added to the input.')),
+    );
+  }
+
   void _saveChat() {
     final chatState = ref.read(chatProvider);
     if (chatState.messages.isEmpty) {
@@ -164,10 +183,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               height: 32,
             ),
             const SizedBox(width: 10),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Jeffrey - Pro', style: TextStyle(fontSize: 16)),
+                Text('Jeffrey • $selectedPlan',
+                    style: const TextStyle(fontSize: 16)),
               ],
             ),
           ],
@@ -599,6 +619,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               : Colors.red)),
                   minHeight: 4,
                 ),
+              ),
+            ],
+            if (!message.isUser) ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => _copyMessage(message.content),
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: const Text('Copy'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _setFollowUpDraft,
+                    icon: const Icon(Icons.reply, size: 16),
+                    label: const Text('Ask follow-up'),
+                  ),
+                ],
               ),
             ],
           ],
