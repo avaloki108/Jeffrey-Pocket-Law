@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/viral_growth_service.dart';
+import '../core/revenuecat_service.dart';
 import 'providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -60,6 +61,41 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+          // Subscription Status Card
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.workspace_premium, size: 24),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Jeffrey Pocket Lawyer Pro',
+                          style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Consumer(
+                        builder: (context, ref, _) {
+                          final hasProAccess = ref.watch(hasProAccessProvider);
+                          return TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/subscription');
+                            },
+                            child: const Text('Manage'),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           Card(

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/mixpanel_service.dart';
 import 'providers.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
@@ -68,17 +69,34 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     try {
       final authRepo = ref.read(authRepositoryProvider);
       final storage = ref.read(secureStorageProvider);
+      final email = _emailController.text.trim();
 
       if (_isLogin) {
+        // Track sign in
+        MixpanelService.track('Sign In', {
+          'login_method': 'email',
+          'success': true,
+        });
         await authRepo.signInWithEmailAndPassword(
-          _emailController.text.trim(),
+          email,
           _passwordController.text.trim(),
         );
+        // Identify user
+        MixpanelService.identifyUser(email);
+        MixpanelService.setUserProperties({'email': email});
       } else {
+        // Track sign up
+        MixpanelService.track('Sign Up', {
+          'signup_method': 'email',
+          'email': email,
+        });
         await authRepo.createUserWithEmailAndPassword(
-          _emailController.text.trim(),
+          email,
           _passwordController.text.trim(),
         );
+        // Identify user
+        MixpanelService.identifyUser(email);
+        MixpanelService.setUserProperties({'email': email});
       }
 
       if (_rememberMe) {
@@ -121,12 +139,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       _isLoading = true;
     });
     try {
+      // Track Google sign in
+      MixpanelService.track('Sign In', {
+        'login_method': 'google',
+        'success': true,
+      });
       final authRepo = ref.read(authRepositoryProvider);
-      await authRepo.signInWithGoogle();
+      final userCredential = await authRepo.signInWithGoogle();
+      // Identify user
+      if (userCredential.user?.email != null) {
+        MixpanelService.identifyUser(userCredential.user!.email!);
+        MixpanelService.setUserProperties({'email': userCredential.user!.email});
+      }
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
+      MixpanelService.track('Sign In', {
+        'login_method': 'google',
+        'success': false,
+        'error': e.toString(),
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString())),

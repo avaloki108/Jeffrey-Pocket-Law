@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../core/mixpanel_service.dart';
 import '../domain/models/chat_message.dart';
 import 'chat_state_notifier.dart';
 import 'providers.dart';
@@ -61,6 +62,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _sendMessage(String text) async {
     final chatState = ref.read(chatProvider);
     if (text.trim().isEmpty || chatState.isLoading) return;
+
+    // Track search/query event
+    MixpanelService.track('Search', {
+      'search_query': text.trim(),
+      'query_length': text.length,
+    });
 
     _messageController.clear();
 

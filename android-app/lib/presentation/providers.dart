@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../data/api_client_repository.dart';
 import '../data/auth_repository.dart';
@@ -15,6 +16,7 @@ import '../infrastructure/legiscan_api_client.dart';
 import '../infrastructure/open_router_api_client.dart';
 import '../services/complete_legal_ai_service.dart';
 import '../services/viral_growth_service.dart';
+import '../core/revenuecat_service.dart';
 import 'deepseek_providers.dart';
 
 // import 'package:firebase_data_connect/firebase_data_connect.dart'; // Unused directly here, but used in generated.dart
@@ -212,3 +214,16 @@ const abbrToStateName = {
   'WI': 'Wisconsin',
   'WY': 'Wyoming',
 };
+
+// RevenueCat providers
+final hasProAccessProvider = FutureProvider<bool>((ref) async {
+  return await RevenueCatService.hasProAccess();
+});
+
+final subscriptionStatusProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  return await RevenueCatService.getSubscriptionStatus();
+});
+
+final currentOfferingProvider = FutureProvider((ref) async {
+  return await RevenueCatService.getCurrentOffering();
+});

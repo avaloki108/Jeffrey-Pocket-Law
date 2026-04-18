@@ -10,6 +10,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import 'core/revenuecat_service.dart';
+import 'core/mixpanel_service.dart';
 import 'core/constants.dart';
 import 'core/themes.dart';
 import 'firebase_options.dart';
@@ -21,6 +23,7 @@ import 'presentation/personalize_screen.dart';
 import 'presentation/prompts_screen.dart';
 import 'presentation/settings_screen.dart';
 import 'presentation/splash_screen.dart';
+import 'presentation/subscription_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +55,12 @@ Future<void> main() async {
       await dotenv.load(fileName: '.env.example');
     } catch (_) {}
   }
+
+  // Initialize Mixpanel
+  await MixpanelService.initialize();
+
+  // Initialize RevenueCat
+  await RevenueCatService.initialize();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -106,6 +115,9 @@ class MyApp extends StatelessWidget {
           case '/settings':
             return MaterialPageRoute(
                 builder: (context) => const SettingsScreen());
+          case '/subscription':
+            return MaterialPageRoute(
+                builder: (context) => const SubscriptionScreen());
           default:
             return MaterialPageRoute(
                 builder: (context) => const SplashScreen());

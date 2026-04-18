@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/mixpanel_service.dart';
 import 'chat_screen.dart';
 import 'chat_state_notifier.dart';
 import 'prompts_screen.dart';
@@ -23,7 +24,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     SettingsScreen(),
   ];
 
-  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
+  void _onItemTapped(int index) {
+    final screenNames = ['Chat', 'Prompts', 'Settings'];
+    MixpanelService.track('Page View', {
+      'page_name': screenNames[index],
+    });
+    setState(() => _selectedIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {

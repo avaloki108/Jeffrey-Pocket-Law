@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../domain/models/chat_message.dart';
 import '../domain/models/legal_source.dart';
 import '../domain/chat_usecase.dart';

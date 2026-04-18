@@ -27,11 +27,8 @@ class BiometricService {
     try {
       final authenticated = await _localAuth.authenticate(
         localizedReason: localizedReason,
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          useErrorDialogs: true,
-          stickyAuth: true,
-        ),
+        biometricOnly: true,
+        persistAcrossBackgrounding: true,
       );
       return authenticated;
     } catch (e) {
@@ -45,11 +42,8 @@ class BiometricService {
     try {
       final authenticated = await _localAuth.authenticate(
         localizedReason: localizedReason,
-        options: const AuthenticationOptions(
-          biometricOnly: false, // Allow fallback to PIN/pattern
-          useErrorDialogs: true,
-          stickyAuth: true,
-        ),
+        biometricOnly: false, // Allow fallback to PIN/pattern
+        persistAcrossBackgrounding: true,
       );
       return authenticated;
     } catch (e) {
