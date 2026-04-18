@@ -20,6 +20,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "ai.pocketlawyer.app"
     compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
         applicationId = "ai.pocketlawyer.app"

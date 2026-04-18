@@ -71,6 +71,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     if (onboardingComplete != 'true') {
+      final metJeffrey = await storage.get('met_jeffrey');
+      if (metJeffrey != 'true') {
+        Navigator.of(context).pushReplacementNamed('/meetJeffrey');
+        return;
+      }
       Navigator.of(context).pushReplacementNamed('/onboarding');
       return;
     }

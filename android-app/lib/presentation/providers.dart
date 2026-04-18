@@ -109,6 +109,27 @@ final lawyerNameProvider = StateProvider<String>((ref) => 'Jeffrey');
 final userAgeRangeProvider = StateProvider<String>((ref) => '25-34');
 final userUseCasesProvider = StateProvider<List<String>>((ref) => []);
 
+// Response style preference
+enum ResponseStyle {
+  standard,
+  quickCasual,
+  detailed,
+  justFacts,
+  explainLikeFive,
+}
+
+final responseStyleProvider = StateProvider<ResponseStyle>((ref) => ResponseStyle.standard);
+
+// Agent state for UI feedback
+enum AgentState {
+  idle,
+  researching,
+  analyzing,
+  answering,
+}
+
+final agentStateProvider = StateProvider<AgentState>((ref) => AgentState.idle);
+
 const stateNameToAbbr = {
   'Alabama': 'AL',
   'Alaska': 'AK',

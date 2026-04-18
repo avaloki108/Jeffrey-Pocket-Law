@@ -1,5 +1,6 @@
 import '../data/rag_repository.dart';
 import '../dataconnect_generated/generated.dart';
+import '../presentation/providers.dart' show ResponseStyle;
 
 class ChatUseCase {
   final RagRepository _ragRepository;
@@ -18,6 +19,8 @@ class ChatUseCase {
     String lawyerName = 'Jeffrey',
     String ageRange = '25-34',
     List<String> useCases = const [],
+    List<Map<String, String>>? conversationHistory,
+    ResponseStyle responseStyle = ResponseStyle.standard,
   }) async {
     final response = await _ragRepository.performRAGQuery(
       query,
@@ -29,6 +32,8 @@ class ChatUseCase {
       lawyerName: lawyerName,
       ageRange: ageRange,
       useCases: useCases,
+      conversationHistory: conversationHistory,
+      responseStyle: responseStyle,
     );
 
     // 2. Persist if sessionId is provided
@@ -71,5 +76,15 @@ class ChatUseCase {
       print('Failed to fetch chat history: $e');
       return [];
     }
+  }
+
+  Future<String> generateConversationSummary(
+    List<String> userQuestions,
+    List<String> aiResponses,
+  ) async {
+    return _ragRepository.generateConversationSummary(
+      userQuestions,
+      aiResponses,
+    );
   }
 }

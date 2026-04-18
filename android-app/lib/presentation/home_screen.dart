@@ -8,6 +8,8 @@ import 'prompts_screen.dart';
 import 'providers.dart';
 import 'settings_screen.dart';
 
+const String _headerAvatar = 'assets/images/jeffrey_final-mashed.png';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -73,6 +75,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 bottom: false,
                 child: Row(
                   children: [
+                    // Avatar
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        _headerAvatar,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                     Text(
                       lawyerName,
                       style: const TextStyle(
@@ -97,16 +110,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             )
           else
-            // SafeArea top inset even when header hidden
+            // SafeArea top inset even when header hidden (with avatar strip)
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF5D5CDE), Color(0xFF7878F2)],
                 ),
               ),
-              child: const SafeArea(
+              child: SafeArea(
                 bottom: false,
-                child: SizedBox.shrink(),
+                child: SizedBox(
+                  height: 4,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      _headerAvatar,
+                      width: 32,
+                      height: 32,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
             ),
           Expanded(child: _screens[_selectedIndex]),

@@ -33,13 +33,18 @@ class ChatState {
 class ChatNotifier extends StateNotifier<ChatState> {
   final ChatUseCase _chatUseCase;
   final ViralGrowthService _viralService;
+  final Ref _ref;
 
-  ChatNotifier(this._chatUseCase, this._viralService) : super(ChatState()) {
+  ChatNotifier(this._chatUseCase, this._viralService, this._ref) : super(ChatState()) {
     // Initialize session ID if not already set
     if (state.sessionId == null) {
       state = state.copyWith(
           sessionId: DateTime.now().millisecondsSinceEpoch.toString());
     }
+  }
+
+  void _setAgentState(AgentState agentState) {
+    _ref.read(agentStateProvider.notifier).state = agentState;
   }
 
   Future<void> sendMessage(
@@ -52,6 +57,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
     String lawyerName = 'Jeffrey',
     String ageRange = '25-34',
     List<String> useCases = const [],
+    ResponseStyle? responseStyle,
   }) async {
     if (text.trim().isEmpty || state.isLoading) return;
 
@@ -64,6 +70,28 @@ class ChatNotifier extends StateNotifier<ChatState> {
     );
 
     try {
+      // Set agent states for UX feedback
+      _setAgentState(AgentState.researching);
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      _setAgentState(AgentState.analyzing);
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      _setAgentState(AgentState.answering);
+
+      // Build conversation context (last 10 messages for context window efficiency)
+      final conversationHistory = state.messages
+          .take(10)
+          .map((msg) => {
+                'role': msg.isUser ? 'user' : 'assistant',
+                'content': msg.content,
+              })
+          .toList();
+
+      // Get response style from provider if not explicitly passed
+      final style =
+          responseStyle ?? _ref.read(responseStyleProvider.notifier).state;
+
       final response = await _chatUseCase.sendMessage(
         text,
         stateAbbr,
@@ -75,6 +103,8 @@ class ChatNotifier extends StateNotifier<ChatState> {
         lawyerName: lawyerName,
         ageRange: ageRange,
         useCases: useCases,
+        conversationHistory: conversationHistory,
+        responseStyle: style,
       );
 
       final botMsg = ChatMessage(
@@ -85,7 +115,12 @@ class ChatNotifier extends StateNotifier<ChatState> {
             ?.map((s) => LegalSource.fromJson(s as Map<String, dynamic>))
             .toList(),
         confidence: response['confidence'] as double?,
+        followUpSuggestions: (response['followUpSuggestions'] as List?)
+            ?.map((s) => s as String)
+            .toList(),
       );
+
+      _setAgentState(AgentState.idle);
 
       state = state.copyWith(
         messages: [...state.messages, botMsg],
@@ -94,6 +129,7 @@ class ChatNotifier extends StateNotifier<ChatState> {
 
       _viralService.requestReview();
     } catch (e) {
+      _setAgentState(AgentState.idle);
       final errorMsg = ChatMessage(
         content: 'Error: ${e.toString()}\n\nCheck API credentials or rephrase.',
         isUser: false,
@@ -116,5 +152,5 @@ class ChatNotifier extends StateNotifier<ChatState> {
 final chatProvider = StateNotifierProvider<ChatNotifier, ChatState>((ref) {
   final chatUseCase = ref.read(chatUseCaseProvider);
   final viralService = ref.read(viralGrowthServiceProvider);
-  return ChatNotifier(chatUseCase, viralService);
+  return ChatNotifier(chatUseCase, viralService, ref);
 });

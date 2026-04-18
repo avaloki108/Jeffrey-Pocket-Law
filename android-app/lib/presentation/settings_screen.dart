@@ -16,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
     final selectedJurisdiction = ref.watch(selectedJurisdictionProvider);
     final selectedCounty = ref.watch(selectedCountyProvider);
     final selectedPlan = ref.watch(selectedPlanProvider);
+    final selectedStyle = ref.watch(responseStyleProvider);
 
     return Scaffold(
       body: ListView(
@@ -172,6 +173,88 @@ class SettingsScreen extends ConsumerWidget {
                     onChanged: (value) => ref
                         .read(selectedCountyProvider.notifier)
                         .state = value.trim(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Response Style Card
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.tune, size: 20),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Response Style',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      Tooltip(
+                        message: 'Choose how Jeffrey talks to you',
+                        child: Icon(Icons.info_outline,
+                            size: 16, color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Customize how Jeffrey explains the law to you.',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  ),
+                  const SizedBox(height: 16),
+                  _ResponseStyleOption(
+                    label: 'Standard',
+                    description: 'Balanced - like a lawyer friend',
+                    icon: Icons.balance,
+                    style: ResponseStyle.standard,
+                    selectedStyle: selectedStyle,
+                    onTap: () => ref.read(responseStyleProvider.notifier).state =
+                        ResponseStyle.standard,
+                  ),
+                  const SizedBox(height: 8),
+                  _ResponseStyleOption(
+                    label: 'Quick & Casual',
+                    description: 'Brief and conversational',
+                    icon: Icons.flash_on,
+                    style: ResponseStyle.quickCasual,
+                    selectedStyle: selectedStyle,
+                    onTap: () => ref.read(responseStyleProvider.notifier).state =
+                        ResponseStyle.quickCasual,
+                  ),
+                  const SizedBox(height: 8),
+                  _ResponseStyleOption(
+                    label: 'Detailed & Thorough',
+                    description: 'Comprehensive deep dive',
+                    icon: Icons.article,
+                    style: ResponseStyle.detailed,
+                    selectedStyle: selectedStyle,
+                    onTap: () => ref.read(responseStyleProvider.notifier).state =
+                        ResponseStyle.detailed,
+                  ),
+                  const SizedBox(height: 8),
+                  _ResponseStyleOption(
+                    label: 'Just the Facts',
+                    description: 'Objective and neutral',
+                    icon: Icons.fact_check,
+                    style: ResponseStyle.justFacts,
+                    selectedStyle: selectedStyle,
+                    onTap: () => ref.read(responseStyleProvider.notifier).state =
+                        ResponseStyle.justFacts,
+                  ),
+                  const SizedBox(height: 8),
+                  _ResponseStyleOption(
+                    label: "Explain Like I'm 5",
+                    description: 'Simple analogies and examples',
+                    icon: Icons.child_care,
+                    style: ResponseStyle.explainLikeFive,
+                    selectedStyle: selectedStyle,
+                    onTap: () => ref.read(responseStyleProvider.notifier).state =
+                        ResponseStyle.explainLikeFive,
                   ),
                 ],
               ),
@@ -606,6 +689,96 @@ class _ViralGrowthCardState extends State<_ViralGrowthCard> {
               label,
               style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ResponseStyleOption extends StatelessWidget {
+  final String label;
+  final String description;
+  final IconData icon;
+  final ResponseStyle style;
+  final ResponseStyle selectedStyle;
+  final VoidCallback onTap;
+
+  const _ResponseStyleOption({
+    required this.label,
+    required this.description,
+    required this.icon,
+    required this.style,
+    required this.selectedStyle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = selectedStyle == style;
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF5D5CDE).withOpacity(0.08)
+              : (theme.brightness == Brightness.dark
+                  ? Colors.grey.shade800
+                  : Colors.white),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF5D5CDE) : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? const Color(0xFF5D5CDE).withOpacity(0.15)
+                    : Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                size: 18,
+                color: isSelected ? const Color(0xFF5D5CDE) : Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? const Color(0xFF5D5CDE) : null,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Color(0xFF5D5CDE), size: 20)
+            else
+              Icon(Icons.circle_outlined, size: 20, color: Colors.grey.shade400),
           ],
         ),
       ),

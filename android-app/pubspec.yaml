@@ -83,3 +83,7 @@ flutter:
     - .env.example
     - test_env
     - assets/images/logo.png
+    - assets/images/jeffrey-app-icon.png
+    - assets/images/jeffrey_05.png
+    - assets/images/jeffrey_gold_06.png
+    - assets/images/jeffrey_final-mashed.png

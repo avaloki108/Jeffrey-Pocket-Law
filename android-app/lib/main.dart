@@ -18,6 +18,7 @@ import 'firebase_options.dart';
 import 'presentation/auth_screen.dart';
 import 'presentation/chat_screen.dart';
 import 'presentation/home_screen.dart';
+import 'presentation/meet_jeffrey_screen.dart';
 import 'presentation/onboarding_screen.dart';
 import 'presentation/personalize_screen.dart';
 import 'presentation/prompts_screen.dart';
@@ -97,16 +98,15 @@ class MyApp extends StatelessWidget {
           case '/':
             return MaterialPageRoute(
                 builder: (context) => const SplashScreen());
-          case '/auth':
-            return MaterialPageRoute(builder: (context) => const AuthScreen());
+          case '/meetJeffrey':
+            return MaterialPageRoute(
+                builder: (context) => const MeetJeffreyScreen());
           case '/onboarding':
             return MaterialPageRoute(
-              builder: (context) => const OnboardingScreen(),
-            );
+                builder: (context) => const OnboardingScreen());
           case '/personalize':
             return MaterialPageRoute(
-              builder: (context) => const PersonalizeScreen(),
-            );
+                builder: (context) => const PersonalizeScreen());
           case '/home':
             return MaterialPageRoute(builder: (context) => const HomeScreen());
           case '/prompts':

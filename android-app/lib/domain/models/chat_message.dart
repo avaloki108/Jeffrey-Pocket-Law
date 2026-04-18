@@ -6,6 +6,7 @@ class ChatMessage {
   final DateTime timestamp;
   final List<LegalSource>? sources;
   final double? confidence;
+  final List<String>? followUpSuggestions;
 
   ChatMessage({
     required this.content,
@@ -13,7 +14,26 @@ class ChatMessage {
     required this.timestamp,
     this.sources,
     this.confidence,
+    this.followUpSuggestions,
   });
+
+  ChatMessage copyWith({
+    String? content,
+    bool? isUser,
+    DateTime? timestamp,
+    List<LegalSource>? sources,
+    double? confidence,
+    List<String>? followUpSuggestions,
+  }) {
+    return ChatMessage(
+      content: content ?? this.content,
+      isUser: isUser ?? this.isUser,
+      timestamp: timestamp ?? this.timestamp,
+      sources: sources ?? this.sources,
+      confidence: confidence ?? this.confidence,
+      followUpSuggestions: followUpSuggestions ?? this.followUpSuggestions,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -22,6 +42,7 @@ class ChatMessage {
       'timestamp': timestamp.toIso8601String(),
       'sources': sources?.map((s) => s.toJson()).toList(),
       'confidence': confidence,
+      'followUpSuggestions': followUpSuggestions,
     };
   }
 
@@ -34,6 +55,9 @@ class ChatMessage {
           ?.map((s) => LegalSource.fromJson(s as Map<String, dynamic>))
           .toList(),
       confidence: json['confidence'] as double?,
+      followUpSuggestions: (json['followUpSuggestions'] as List?)
+          ?.map((s) => s as String)
+          .toList(),
     );
   }
 }
